@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-import streamlit.components.v1 as components
 
 # --- SETUP ---
 st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sidebar_state="collapsed")
@@ -9,11 +8,11 @@ st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sideba
 # --- ROUTING LOGIC ---
 current_page = st.query_params.get("page", "home")
 
-# --- CSS INJECTION (Header + App Styling) ---
+# --- CSS INJECTION (Header, Ticker, & App Styling) ---
 st.markdown("""
     <style>
     [data-testid="stHeader"] { display: none; }
-    .block-container { padding-top: 100px !important; max-width: 1000px; }
+    .block-container { padding-top: 100px !important; padding-bottom: 80px !important; max-width: 1000px; }
     
     /* TOP NAVIGATION HEADER CSS */
     .custom-header-wrapper {
@@ -35,6 +34,44 @@ st.markdown("""
     .login-btn { text-decoration: none; color: #334155; font-weight: 600; font-size: 15px; transition: color 0.2s; }
     .login-btn:hover { color: #0f172a; }
 
+    /* BOTTOM FLOATING STOCK TICKER CSS */
+    .stock-ticker-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #0f172a;
+        color: white;
+        overflow: hidden;
+        white-space: nowrap;
+        z-index: 999999;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        padding: 12px 0;
+        border-top: 1px solid #334155;
+        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .stock-ticker-track {
+        display: inline-block;
+        white-space: nowrap;
+        animation: marquee 35s linear infinite;
+    }
+    .stock-ticker-track:hover {
+        animation-play-state: paused;
+    }
+    @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-50%); }
+    }
+    .stock-item {
+        display: inline-block;
+        margin-right: 35px;
+    }
+    .stock-name { font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; }
+    .stock-price { margin-left: 6px; font-weight: 600; color: #f8fafc; }
+    .stock-up { color: #4ade80; margin-left: 6px; font-weight: 600; }
+    .stock-down { color: #f87171; margin-left: 6px; font-weight: 600; }
+
     /* MAIN APP BODY CSS */
     .stApp { background-color: #ffffff; background-image: linear-gradient(#f4f5f7 1px, transparent 1px), linear-gradient(90deg, #f4f5f7 1px, transparent 1px); background-size: 40px 40px; }
     label, p, .stMarkdown, li { color: #334155 !important; line-height: 1.6; }
@@ -49,7 +86,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- HTML INJECTION: DYNAMIC HEADER ---
+# --- HTML INJECTION: TOP NAVIGATION HEADER ---
 st.markdown(f"""
 <div class="custom-header-wrapper">
     <div class="tier-1">
@@ -74,6 +111,42 @@ st.markdown(f"""
             </div>
             <a href="#" class="login-btn">Log in</a>
         </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+# --- HTML INJECTION: BOTTOM FLOATING STOCK TICKER (NIFTY 50, BANK & TOP COMPANIES) ---
+st.markdown("""
+<div class="stock-ticker-wrapper">
+    <div class="stock-ticker-track">
+        <!-- FIRST SET OF DATA -->
+        <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
+        <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
+        <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
+        <span class="stock-item"><span class="stock-name">TCS</span><span class="stock-price">₹4,120.00</span><span class="stock-down">-12.30 (-0.30%)</span></span>
+        <span class="stock-item"><span class="stock-name">HDFC BANK</span><span class="stock-price">₹1,540.80</span><span class="stock-up">+8.40 (+0.55%)</span></span>
+        <span class="stock-item"><span class="stock-name">INFOSYS</span><span class="stock-price">₹1,650.25</span><span class="stock-down">-5.10 (-0.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">ICICI BANK</span><span class="stock-price">₹1,115.40</span><span class="stock-up">+14.20 (+1.29%)</span></span>
+        <span class="stock-item"><span class="stock-name">ITC</span><span class="stock-price">₹435.60</span><span class="stock-up">+2.10 (+0.48%)</span></span>
+        <span class="stock-item"><span class="stock-name">SBIN</span><span class="stock-price">₹820.50</span><span class="stock-down">-4.80 (-0.58%)</span></span>
+        <span class="stock-item"><span class="stock-name">BHARTI AIRTEL</span><span class="stock-price">₹1,410.90</span><span class="stock-up">+18.30 (+1.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
+        <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
+        
+        <!-- DUPLICATED SET FOR SEAMLESS INFINITE LOOP -->
+        <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
+        <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
+        <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
+        <span class="stock-item"><span class="stock-name">TCS</span><span class="stock-price">₹4,120.00</span><span class="stock-down">-12.30 (-0.30%)</span></span>
+        <span class="stock-item"><span class="stock-name">HDFC BANK</span><span class="stock-price">₹1,540.80</span><span class="stock-up">+8.40 (+0.55%)</span></span>
+        <span class="stock-item"><span class="stock-name">INFOSYS</span><span class="stock-price">₹1,650.25</span><span class="stock-down">-5.10 (-0.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">ICICI BANK</span><span class="stock-price">₹1,115.40</span><span class="stock-up">+14.20 (+1.29%)</span></span>
+        <span class="stock-item"><span class="stock-name">ITC</span><span class="stock-price">₹435.60</span><span class="stock-up">+2.10 (+0.48%)</span></span>
+        <span class="stock-item"><span class="stock-name">SBIN</span><span class="stock-price">₹820.50</span><span class="stock-down">-4.80 (-0.58%)</span></span>
+        <span class="stock-item"><span class="stock-name">BHARTI AIRTEL</span><span class="stock-price">₹1,410.90</span><span class="stock-up">+18.30 (+1.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
+        <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -152,7 +225,7 @@ if current_page == "home":
 
 
 # ==========================================
-# PAGE ROUTING: LEARN (ARTICLE + FEATURED CONTENT)
+# PAGE ROUTING: LEARN
 # ==========================================
 elif current_page == "learn":
     learn_html = """
@@ -173,133 +246,41 @@ elif current_page == "learn":
         padding-bottom: 60px;
     }
     .breadcrumb {
-        color: #007b8a;
-        font-weight: 600;
-        font-size: 13px;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        color: #007b8a; font-weight: 600; font-size: 13px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .article-hr {
-        border: 0;
-        border-top: 1px solid #e2e8f0;
-        margin-bottom: 30px;
-    }
-    .article-title {
-        color: #2c3e50;
-        font-size: 38px;
-        font-weight: 700;
-        margin-bottom: 24px;
-        line-height: 1.2;
-    }
-    .article-intro {
-        font-size: 16px;
-        line-height: 1.6;
-        margin-bottom: 24px;
-        color: #2d3748;
-    }
-    .toc-list {
-        margin: 0 0 40px 0;
-        padding-left: 20px;
-    }
-    .toc-list li {
-        margin-bottom: 8px;
-        font-size: 16px;
-    }
-    .teal-link {
-        color: #007b8a;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .teal-link:hover {
-        text-decoration: underline;
-    }
-    .section-title {
-        font-size: 22px;
-        font-weight: 700;
-        margin-top: 40px;
-        margin-bottom: 15px;
-        color: #0f172a;
-    }
-    .article-text {
-        font-size: 16px;
-        line-height: 1.7;
-        margin-bottom: 20px;
-        color: #1a202c;
-    }
+    .article-hr { border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 30px; }
+    .article-title { color: #2c3e50; font-size: 38px; font-weight: 700; margin-bottom: 24px; line-height: 1.2; }
+    .article-intro { font-size: 16px; line-height: 1.6; margin-bottom: 24px; color: #2d3748; }
+    .toc-list { margin: 0 0 40px 0; padding-left: 20px; }
+    .toc-list li { margin-bottom: 8px; font-size: 16px; }
+    .teal-link { color: #007b8a; text-decoration: none; font-weight: 500; }
+    .teal-link:hover { text-decoration: underline; }
+    .section-title { font-size: 22px; font-weight: 700; margin-top: 40px; margin-bottom: 15px; color: #0f172a; }
+    .article-text { font-size: 16px; line-height: 1.7; margin-bottom: 20px; color: #1a202c; }
 
     /* FEATURED CONTENT GRID STYLING */
-    .featured-section-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: #0b2239;
-        margin-top: 60px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 10px;
-    }
-    .featured-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-top: 20px;
-    }
-    .featured-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 4px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.2s;
-    }
-    .featured-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .card-banner {
-        height: 130px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 10px;
-    }
+    .featured-section-title { font-size: 28px; font-weight: 700; color: #0b2239; margin-top: 60px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+    .featured-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
+    .featured-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
+    .featured-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .card-banner { height: 130px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e2e8f0; padding: 10px; }
     .banner-1 { background-color: #f7f5f0; }
     .banner-2 { background-color: #ffffff; }
     .banner-3 { background-color: #ffffff; }
     .banner-4 { background-color: #e57373; }
-    
-    .card-body {
-        padding: 18px;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-    }
-    .card-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #003366;
-        margin-bottom: 12px;
-        line-height: 1.3;
-    }
-    .card-desc {
-        font-size: 14px;
-        color: #333333;
-        line-height: 1.5;
-    }
+    .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
+    .card-title { font-size: 18px; font-weight: 700; color: #003366; margin-bottom: 12px; line-height: 1.3; }
+    .card-desc { font-size: 14px; color: #333333; line-height: 1.5; }
     </style>
     </head>
     <body>
     <div class="article-container">
         <div class="breadcrumb">HOME</div>
         <hr class="article-hr">
-        
         <div class="article-title">Introduction to Investing</div>
-        
         <div class="article-intro">
             Through investing, you can build wealth for a strong financial future. Defining your goals and creating and sticking to a plan by regularly setting money aside for investments can drive life-changing results over time.
         </div>
-        
         <ul class="toc-list">
             <li><a href="#" class="teal-link">What is Investing?</a></li>
             <li><a href="#" class="teal-link">Compound Growth</a></li>
@@ -310,93 +291,32 @@ elif current_page == "learn":
             <li><a href="#" class="teal-link">Investing for Your Children</a></li>
             <li><a href="#" class="teal-link">Other Steps to Build Wealth Over Time</a></li>
         </ul>
-        
         <div class="section-title">What is Investing?</div>
         <div class="article-text">
-            Both saving and investing mean you're setting aside some of the money you earn, separate from what you spend on needs and wants. A savings account is a good choice for short-term goals or to hold an emergency fund that can cover unexpected expenses. You can open a savings account at a <a href="#" class="teal-link">bank</a> or <a href="#" class="teal-link">credit union</a>, and the money you deposit there is typically federally insured. Most banks or credit unions will pay some interest on your savings.
+            Both saving and investing mean you're setting aside some of the money you earn, separate from what you spend on needs and wants. A savings account is a good choice for short-term goals or to hold an emergency fund that can cover unexpected expenses.
         </div>
-        <div class="article-text">
-            Investing is when you put your money into assets such as <a href="#" class="teal-link">stocks</a> or <a href="#" class="teal-link">bonds</a>, often held in a brokerage or advisory account, with the expectation of making a return over time. Return from an asset may come from an increase in the asset's value or from an asset's interest or <a href="#" class="teal-link">dividend</a> payments to those who own it.
-        </div>
-
-        <div class="section-title">Compound Growth</div>
-        <div class="article-text">
-            Compound growth, or compounding, is the mathematical process by which an asset's earnings are reinvested to generate their own earnings over time. This concept applies equally to traditional savings accounts and broader investment portfolios. When you utilize <a href="#" class="teal-link">compound interest</a>, you are essentially making your money work for you, creating a snowball effect that accelerates the growth of your wealth.
-        </div>
-
-        <div class="section-title">Managing Risk</div>
-        <div class="article-text">
-            All investments carry some degree of risk. Unlike a standard bank account, money invested in the stock market is not guaranteed to grow, and you could lose the principal amount you started with. Understanding your personal risk tolerance is essential. Investors often utilize a <a href="#" class="teal-link">prospectus</a> to evaluate the inherent risks of a specific mutual fund or ETF before committing capital.
-        </div>
-
-        <div class="section-title">Asset Allocation and Diversification</div>
-        <div class="article-text">
-            Asset allocation involves dividing an investment portfolio among different asset categories, such as equities, fixed income, and cash equivalents. The strategic goal of diversification is to mitigate systematic risk. By spreading your investments across various sectors—such as technology, healthcare, and energy—you reduce the impact of a single market downturn on your overall portfolio. This strategy is frequently managed through <a href="#" class="teal-link">index funds</a> or <a href="#" class="teal-link">mutual funds</a>.
-        </div>
-
-        <!-- FEATURED CONTENT GRID SECTION -->
         <div class="featured-section-title">Featured Content</div>
-        
         <div class="featured-grid">
-            <!-- Card 1 -->
             <div class="featured-card">
-                <div class="card-banner banner-1">
-                    <div style="text-align: center; font-weight: bold; font-family: serif; font-size: 20px;">
-                        <span style="font-size: 12px; display: block; border-bottom: 2px solid #b30000; margin-bottom: 4px;">🇺🇸</span>
-                        Trump Accounts
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">Jumpstart Your Child's Financial Future</div>
-                    <div class="card-desc">Learn how to enroll in a Trump Account today!</div>
-                </div>
+                <div class="card-banner banner-1"><div style="text-align: center; font-weight: bold; font-family: serif; font-size: 20px;">Trump Accounts</div></div>
+                <div class="card-body"><div class="card-title">Jumpstart Your Child's Future</div><div class="card-desc">Learn how to enroll in accounts today!</div></div>
             </div>
-
-            <!-- Card 2 -->
             <div class="featured-card">
-                <div class="card-banner banner-2">
-                    <div style="text-align: center;">
-                        <div style="background: #002868; color: white; font-size: 11px; font-weight: bold; padding: 2px 6px; display: inline-block; margin-bottom: 4px;">★ 250 ★</div>
-                        <div style="width: 70px; height: 35px; background: repeating-linear-gradient(to bottom, #bf0a30, #bf0a30 5px, #ffffff 5px, #ffffff 10px); border: 1px solid #ccc; margin: 0 auto;"></div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">The "50 For 250" Challenge</div>
-                    <div class="card-desc">Become a more informed investor as we honor America's birthday! Can you get all 50 questions correct?</div>
-                </div>
+                <div class="card-banner banner-2"><div style="text-align: center; font-weight: bold; color: #002868;">NIFTY & SENSEX</div></div>
+                <div class="card-body"><div class="card-title">Market Analysis</div><div class="card-desc">Track real-time index performances and economic indicators.</div></div>
             </div>
-
-            <!-- Card 3 -->
             <div class="featured-card">
-                <div class="card-banner banner-3">
-                    <div style="font-size: 40px; color: #002868; font-weight: bold; position: relative;">
-                        ☑
-                        <span style="position: absolute; top: -5px; right: -15px; color: #cc0000; font-size: 35px;">✔</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">Learn About Tax-Advantaged Accounts</div>
-                    <div class="card-desc">401(k) plans, IRAs, HSAs, 529 plans, Trump Accounts, and others offer tax benefits.</div>
-                </div>
+                <div class="card-banner banner-3"><div style="font-size: 30px; color: #002868; font-weight: bold;">☑ ✔</div></div>
+                <div class="card-body"><div class="card-title">Tax-Advantaged Accounts</div><div class="card-desc">Learn how to maximize tax benefits on investments.</div></div>
             </div>
-
-            <!-- Card 4 -->
             <div class="featured-card">
-                <div class="card-banner banner-4">
-                    <div style="font-size: 36px; color: white; font-weight: bold;">
-                        📈
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="card-title">Use Financial Tools And Calculators</div>
-                    <div class="card-desc">Access RMD, compound interest and savings goal calculators plus other financial tools.</div>
-                </div>
+                <div class="card-banner banner-4"><div style="font-size: 36px; color: white;">📈</div></div>
+                <div class="card-body"><div class="card-title">Financial Calculators</div><div class="card-desc">Access compound interest and valuation tools.</div></div>
             </div>
         </div>
-
     </div>
     </body>
     </html>
     """
-    
-    components.html(learn_html, height=1350, scrolling=True)
+    st.components.v1.html(learn_html, height=1200, scrolling=True)
+  
