@@ -17,4 +17,7 @@ This project is an end-to-end predictive analytics pipeline designed to evaluate
 
 ## Files Included
 ## Files Included
-
+## Files Included
+* `IPO_Prediction_Model.py`: The Python machine learning script used to build and train the predictive valuation model.
+* `IPO_Valuation_Dashboard.pbix`: The interactive Power BI file containing the dynamic industry slicers and Readiness Score engine.
+* `Historical_IPO_Dataset.xlsx`: The core database containing the financial fundamentals and market metrics for the 100 evaluated companies.
