@@ -6,19 +6,13 @@ from sklearn.linear_model import LinearRegression
 st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sidebar_state="collapsed")
 
 # --- ROUTING LOGIC ---
-# This reads the URL to see which page we should be on (defaults to 'home')
 current_page = st.query_params.get("page", "home")
 
 # --- CSS INJECTION (Header + App Styling) ---
 st.markdown("""
     <style>
-    /* HIDE DEFAULT STREAMLIT HEADER */
     [data-testid="stHeader"] { display: none; }
-    
-    /* PUSH MAIN CONTENT DOWN */
     .block-container { padding-top: 100px !important; max-width: 1000px; }
-
-    /* TOP NAVIGATION HEADER CSS */
     .custom-header-wrapper {
         position: fixed; top: 0; left: 0; width: 100%; background-color: white;
         z-index: 999999; border-bottom: 1px solid #e2e8f0;
@@ -37,26 +31,23 @@ st.markdown("""
     .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
     .login-btn { text-decoration: none; color: #334155; font-weight: 600; font-size: 15px; transition: color 0.2s; }
     .login-btn:hover { color: #0f172a; }
-
-    /* MAIN APP BODY CSS */
     .stApp { background-color: #ffffff; background-image: linear-gradient(#f4f5f7 1px, transparent 1px), linear-gradient(90deg, #f4f5f7 1px, transparent 1px); background-size: 40px 40px; }
     label, p, .stMarkdown, li { color: #334155 !important; line-height: 1.6; }
     h1, h2, h3, h4 { color: #0f172a !important; }
-    
     div.stButton > button:first-child { background-color: #3b82f6; color: white !important; font-weight: 600; border-radius: 30px; border: none; padding: 12px 30px; width: 100%; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2); }
     div.stButton > button:first-child:hover { background-color: #2563eb; transform: translateY(-2px); }
     div.stAlert { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; }
     .stTextInput>div>div>input, .stNumberInput>div>div>input { border-radius: 8px; border: 1px solid #cbd5e1; color: #0f172a !important; }
-    
-    /* Hero Section */
     .hero-title { font-size: 2.8rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.2rem; }
     .hero-italic { font-family: 'Georgia', serif; font-style: italic; color: #94a3b8 !important; }
     .hero-subtitle { color: #3b82f6 !important; font-size: 0.9rem; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 1rem; }
+    
+    /* Expander/Accordion Styling */
+    .streamlit-expanderHeader { background-color: #f8fafc; border-radius: 8px; font-weight: 600; color: #0f172a; border: 1px solid #e2e8f0; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- HTML INJECTION: DYNAMIC HEADER ---
-# Notice how the hrefs are now "?page=home" and "?page=learn", and target="_self" prevents opening new tabs.
 st.markdown(f"""
 <div class="custom-header-wrapper">
     <div class="tier-1">
@@ -118,7 +109,6 @@ if current_page == "home":
     with col3:
         cash_burn = st.number_input("Cash Burn ($M)", value=90.0)
 
-    # Calculate Base Valuation 
     input_data = pd.DataFrame([[revenue, profit_margin, cash_burn]], columns=['Revenue', 'Profit Margins', 'Cash Burn'])
     base_valuation = max(model.predict(input_data)[0], 100) 
 
@@ -161,45 +151,55 @@ if current_page == "home":
 
 
 # ==========================================
-# PAGE ROUTING: LEARN (EDUCATIONAL HUB)
+# PAGE ROUTING: LEARN (MASSIVE EDUCATIONAL HUB)
 # ==========================================
 elif current_page == "learn":
-    st.markdown('<div class="hero-subtitle">INVESTOR EDUCATION HUB</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-title">The anatomy of an<br><span class="hero-italic">IPO valuation.</span></div>', unsafe_allow_html=True)
-    st.write("Welcome to the methodology page. This guide equips investors and analysts with the financial knowledge required to understand how our predictive model translates raw data into market-ready valuations.")
+    st.markdown('<div class="hero-subtitle">INSTITUTIONAL KNOWLEDGE BASE</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">The Master Glossary of<br><span class="hero-italic">Corporate Finance.</span></div>', unsafe_allow_html=True)
+    st.write("Welcome to the institutional learning center. This repository contains advanced definitions, methodologies, and frameworks utilized by tier-one investment banks (Goldman Sachs, Morgan Stanley) during the IPO underwriting process.")
     st.divider()
-    
-    st.markdown("### 1. The Quantitative Foundation (Machine Learning)")
-    st.info("""
-    **How the Model Learns:**
-    This application is powered by a Scikit-Learn **Multiple Linear Regression** algorithm. 
-    *   **Data Sourcing:** We started with historical IPO data managed in Excel and visualized in Power BI.
-    *   **Algorithmic Weighting:** The algorithm evaluates three core financial inputs (Revenue, Margins, Cash Burn) against resulting historical valuations. It mathematically identifies the "weight" (importance) of each metric.
-    *   **Predictive Pricing:** When you input a new company, the algorithm applies these historical weights to generate a pure, unbiased baseline valuation.
-    """)
-    
-    st.markdown("### 2. Core Financial Fundamentals")
-    st.write("""
-    Before a company goes public, institutional investors assess intrinsic health using three primary pillars:
-    *   **Revenue ($):** Represents total operational income. It validates product-market fit, scalability, and overall market demand. In our model, higher revenue applies a *positive multiplier* to the valuation.
-    *   **Profit Margins (%):** The percentage of revenue retained as profit after expenses. It is a strict measure of operational efficiency and pricing power. 
-    *   **Cash Burn ($):** The rate at which a company depletes its cash reserves before reaching profitability. High cash burn signals severe liquidity risk, triggering a *negative penalty* in the model's valuation.
-    """)
-    
-    st.markdown("### 3. Share Dilution & Enterprise Value")
-    st.write("""
-    A common misconception for retail investors is equating "Share Price" directly to "Company Value." 
-    *   **Enterprise Value:** The total intrinsic dollar value of the entire company (e.g., $10 Billion).
-    *   **Share Price:** Simply the Enterprise Value divided by the arbitrary number of shares the Board of Directors decides to issue.
-    
-    Issuing 100 million shares prices the stock at $100. Issuing 1 billion shares prices it at $10. A lower share price does not mean the company is cheaper; it simply means the equity pie was sliced into smaller pieces.
-    """)
-    
-    st.markdown("### 4. The Roadshow (Quantifying Market Hype)")
-    st.write("""
-    The public stock market is heavily influenced by macroeconomic trends and human psychology. Investment banks adjust their mathematical baseline through a process called the **Roadshow**.
-    *   **Order Book Oversubscription:** If institutional demand exceeds the available share supply (e.g., 5x Oversubscribed), bankers possess leverage to command a price premium.
-    *   **Macro Climate (S&P 500):** Bull markets provide a favorable environment for higher IPO pricing, whereas Bear markets force discounts.
-    
-    *Our tool automates this human element by calculating a mathematical **Hype Multiplier** based directly on inputted supply/demand ratios.*
-    """)
+
+    with st.expander("📌 Section 1: The IPO Lifecycle & Mechanics", expanded=True):
+        st.write("""
+        * **S-1 Registration Statement:** The initial, incredibly detailed document filed with the SEC by a private company planning to go public. It contains historical financials, business models, risk factors, and the proposed use of capital.
+        * **The Bake-Off:** The highly competitive process where investment banks pitch the private company's management team to win the mandate of serving as the "Lead Underwriter" for the IPO.
+        * **Red Herring (Preliminary Prospectus):** A draft version of the prospectus circulated to institutional investors. It contains all financial data but excludes the final IPO price and exact number of shares. The name comes from a red disclaimer printed on the cover stating the information is not yet complete.
+        * **The Roadshow:** A grueling multi-city (or virtual) tour where the company’s executives and lead underwriters pitch the investment thesis to institutional investors, hedge funds, and mutual funds to generate demand.
+        * **Bookbuilding:** The process during the roadshow where underwriters collect "indications of interest" from investors. If the demand exceeds the supply of shares, the "book" is considered *oversubscribed*.
+        * **Greenshoe Option (Over-Allotment):** A provision in an underwriting agreement that allows the underwriters to sell up to 15% more shares than originally planned. It acts as a stabilization mechanism if the stock price skyrockets or plummets on opening day.
+        * **Lock-Up Period:** A contractual caveat preventing insiders (founders, employees, early venture capitalists) from selling their shares for a specified timeframe (usually 90 to 180 days) post-IPO to prevent market flooding.
+        * **Price Discovery:** The intricate mathematical and psychological process of determining the final IPO share price based on institutional demand, macroeconomic factors, and intrinsic valuation modeling.
+        * **Free Float:** The actual number of shares that are freely tradable in the public market, excluding restricted shares held by insiders.
+        """)
+
+    with st.expander("📌 Section 2: Core Valuation Methodologies"):
+        st.write("""
+        * **Discounted Cash Flow (DCF):** The gold standard of intrinsic valuation. It involves projecting a company’s unlevered free cash flows (UFCF) 5 to 10 years into the future, and discounting them back to today's present value using the WACC.
+        * **WACC (Weighted Average Cost of Capital):** The average rate of return a company is expected to pay to all its security holders to finance its assets. It serves as the discount rate in a DCF model.
+        * **Terminal Value (TV):** Used in a DCF, it represents the present value of all future cash flows beyond the initial projection period, assuming the company grows at a stable rate in perpetuity.
+        * **Comparable Company Analysis (Comps):** A relative valuation method that evaluates a company's metrics against publicly traded peers. If identical companies trade at 10x Revenue, the target company will likely be modeled at 10x Revenue.
+        * **Precedent Transactions:** Analyzing the multiples paid in historical M&A (Mergers and Acquisitions) deals for similar companies to establish a pricing baseline.
+        * **Enterprise Value (EV):** The true total value of a company. Formula: Market Capitalization + Total Debt - Cash & Cash Equivalents.
+        * **Market Capitalization (Market Cap):** The total dollar market value of a company's outstanding shares of stock. Formula: Share Price × Total Number of Outstanding Shares.
+        """)
+
+    with st.expander("📌 Section 3: Advanced SaaS & Tech Fundamentals"):
+        st.write("""
+        * **EBITDA:** Earnings Before Interest, Taxes, Depreciation, and Amortization. A vital proxy for operational cash flow that strips out non-operating expenses.
+        * **Rule of 40:** A primary benchmark for evaluating SaaS companies. It states that a software company's combined growth rate and profit margin should exceed 40%.
+        * **CAC (Customer Acquisition Cost):** The total sales and marketing cost required to acquire a single new customer.
+        * **LTV (Lifetime Value):** The total gross margin a company expects to earn from a customer over the duration of their relationship. An optimal LTV:CAC ratio is generally considered 3:1 or higher.
+        * **ARR / MRR:** Annual/Monthly Recurring Revenue. The lifeblood of subscription businesses, representing normalized, predictable income.
+        * **Net Retention Rate (NRR):** Measures the percentage of recurring revenue retained from existing customers over a given period, inclusive of upgrades, downgrades, and churn. An NRR over 100% indicates negative churn (the company grows without adding new customers).
+        * **Cash Runway:** The amount of time (usually in months) a startup has before it burns through its cash reserves, assuming current burn rates remain constant.
+        """)
+        
+    with st.expander("📌 Section 4: Macro Market Dynamics"):
+        st.write("""
+        * **Alpha:** The excess return of an investment relative to the return of a benchmark index. It measures portfolio manager performance.
+        * **Beta:** A measure of the volatility, or systematic risk, of a security or portfolio in comparison to the market as a whole. A Beta > 1 means the stock is more volatile than the market.
+        * **Systematic Risk:** Inherent risk affecting the entire market (e.g., inflation, interest rate hikes, war) that cannot be mitigated through diversification.
+        * **Unsystematic Risk:** Company-specific risk (e.g., a CEO scandal, supply chain failure) that can be mitigated by holding a diversified portfolio.
+        * **Liquidity Premium:** The additional return an investor demands for holding an illiquid asset (an asset that cannot be quickly converted into cash without a loss of value).
+        * **VIX (Volatility Index):** Often called the "Fear Gauge," it measures the stock market's expectation of volatility based on S&P 500 index options. High VIX signals a terrible time for an IPO.
+        """)
