@@ -152,7 +152,7 @@ if current_page == "home":
 
 
 # ==========================================
-# PAGE ROUTING: LEARN (RENDERED HTML COMPONENT)
+# PAGE ROUTING: LEARN (ARTICLE + FEATURED CONTENT)
 # ==========================================
 elif current_page == "learn":
     learn_html = """
@@ -168,9 +168,9 @@ elif current_page == "learn":
         padding: 20px;
     }
     .article-container {
-        max-width: 900px;
+        max-width: 1000px;
         margin: 0 auto;
-        padding-bottom: 100px;
+        padding-bottom: 60px;
     }
     .breadcrumb {
         color: #007b8a;
@@ -186,9 +186,9 @@ elif current_page == "learn":
         margin-bottom: 30px;
     }
     .article-title {
-        color: #5a6b7c;
+        color: #2c3e50;
         font-size: 38px;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: 24px;
         line-height: 1.2;
     }
@@ -199,25 +199,25 @@ elif current_page == "learn":
         color: #2d3748;
     }
     .toc-list {
-        margin: 0 0 35px 0;
+        margin: 0 0 40px 0;
         padding-left: 20px;
     }
     .toc-list li {
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         font-size: 16px;
     }
     .teal-link {
         color: #007b8a;
         text-decoration: none;
-        font-weight: 400;
+        font-weight: 500;
     }
     .teal-link:hover {
         text-decoration: underline;
     }
     .section-title {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
-        margin-top: 35px;
+        margin-top: 40px;
         margin-bottom: 15px;
         color: #0f172a;
     }
@@ -226,6 +226,66 @@ elif current_page == "learn":
         line-height: 1.7;
         margin-bottom: 20px;
         color: #1a202c;
+    }
+
+    /* FEATURED CONTENT GRID STYLING */
+    .featured-section-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #0b2239;
+        margin-top: 60px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+    }
+    .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .featured-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s;
+    }
+    .featured-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .card-banner {
+        height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px;
+    }
+    .banner-1 { background-color: #f7f5f0; }
+    .banner-2 { background-color: #ffffff; }
+    .banner-3 { background-color: #ffffff; }
+    .banner-4 { background-color: #e57373; }
+    
+    .card-body {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #003366;
+        margin-bottom: 12px;
+        line-height: 1.3;
+    }
+    .card-desc {
+        font-size: 14px;
+        color: #333333;
+        line-height: 1.5;
     }
     </style>
     </head>
@@ -273,10 +333,70 @@ elif current_page == "learn":
         <div class="article-text">
             Asset allocation involves dividing an investment portfolio among different asset categories, such as equities, fixed income, and cash equivalents. The strategic goal of diversification is to mitigate systematic risk. By spreading your investments across various sectors—such as technology, healthcare, and energy—you reduce the impact of a single market downturn on your overall portfolio. This strategy is frequently managed through <a href="#" class="teal-link">index funds</a> or <a href="#" class="teal-link">mutual funds</a>.
         </div>
+
+        <!-- FEATURED CONTENT GRID SECTION -->
+        <div class="featured-section-title">Featured Content</div>
+        
+        <div class="featured-grid">
+            <!-- Card 1 -->
+            <div class="featured-card">
+                <div class="card-banner banner-1">
+                    <div style="text-align: center; font-weight: bold; font-family: serif; font-size: 20px;">
+                        <span style="font-size: 12px; display: block; border-bottom: 2px solid #b30000; margin-bottom: 4px;">🇺🇸</span>
+                        Trump Accounts
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Jumpstart Your Child's Financial Future</div>
+                    <div class="card-desc">Learn how to enroll in a Trump Account today!</div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="featured-card">
+                <div class="card-banner banner-2">
+                    <div style="text-align: center;">
+                        <div style="background: #002868; color: white; font-size: 11px; font-weight: bold; padding: 2px 6px; display: inline-block; margin-bottom: 4px;">★ 250 ★</div>
+                        <div style="width: 70px; height: 35px; background: repeating-linear-gradient(to bottom, #bf0a30, #bf0a30 5px, #ffffff 5px, #ffffff 10px); border: 1px solid #ccc; margin: 0 auto;"></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">The "50 For 250" Challenge</div>
+                    <div class="card-desc">Become a more informed investor as we honor America's birthday! Can you get all 50 questions correct?</div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="featured-card">
+                <div class="card-banner banner-3">
+                    <div style="font-size: 40px; color: #002868; font-weight: bold; position: relative;">
+                        ☑
+                        <span style="position: absolute; top: -5px; right: -15px; color: #cc0000; font-size: 35px;">✔</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Learn About Tax-Advantaged Accounts</div>
+                    <div class="card-desc">401(k) plans, IRAs, HSAs, 529 plans, Trump Accounts, and others offer tax benefits.</div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="featured-card">
+                <div class="card-banner banner-4">
+                    <div style="font-size: 36px; color: white; font-weight: bold;">
+                        📈
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">Use Financial Tools And Calculators</div>
+                    <div class="card-desc">Access RMD, compound interest and savings goal calculators plus other financial tools.</div>
+                </div>
+            </div>
+        </div>
+
     </div>
     </body>
     </html>
     """
     
-    # Using st.components.v1.html completely prevents Streamlit from escaping it into a markdown code block
-    components.html(learn_html, height=1100, scrolling=True)
+    components.html(learn_html, height=1350, scrolling=True)
