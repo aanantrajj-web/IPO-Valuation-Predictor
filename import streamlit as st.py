@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+import streamlit.components.v1 as components
 
 # --- SETUP ---
 st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sidebar_state="collapsed")
@@ -8,11 +9,11 @@ st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sideba
 # --- ROUTING LOGIC ---
 current_page = st.query_params.get("page", "home")
 
-# --- CSS INJECTION (Header, Ticker, & App Styling) ---
+# --- CSS INJECTION (Header & App Styling) ---
 st.markdown("""
     <style>
     [data-testid="stHeader"] { display: none; }
-    .block-container { padding-top: 100px !important; padding-bottom: 90px !important; max-width: 1000px; }
+    .block-container { padding-top: 100px !important; padding-bottom: 50px !important; max-width: 1000px; }
     
     /* TOP NAVIGATION HEADER CSS */
     .custom-header-wrapper {
@@ -33,44 +34,6 @@ st.markdown("""
     .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
     .login-btn { text-decoration: none; color: #334155; font-weight: 600; font-size: 15px; transition: color 0.2s; }
     .login-btn:hover { color: #0f172a; }
-
-    /* BOTTOM FLOATING STOCK TICKER CSS */
-    .stock-ticker-wrapper {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #0f172a;
-        color: white;
-        overflow: hidden;
-        white-space: nowrap;
-        z-index: 999999;
-        font-family: 'Inter', sans-serif;
-        font-size: 13px;
-        padding: 12px 0;
-        border-top: 1px solid #334155;
-        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    .stock-ticker-track {
-        display: inline-block;
-        white-space: nowrap;
-        animation: marquee 35s linear infinite;
-    }
-    .stock-ticker-track:hover {
-        animation-play-state: paused;
-    }
-    @keyframes marquee {
-        0% { transform: translateX(0%); }
-        100% { transform: translateX(-50%); }
-    }
-    .stock-item {
-        display: inline-block;
-        margin-right: 35px;
-    }
-    .stock-name { font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; }
-    .stock-price { margin-left: 6px; font-weight: 600; color: #f8fafc; }
-    .stock-up { color: #4ade80; margin-left: 6px; font-weight: 600; }
-    .stock-down { color: #f87171; margin-left: 6px; font-weight: 600; }
 
     /* MAIN APP BODY CSS */
     .stApp { background-color: #ffffff; background-image: linear-gradient(#f4f5f7 1px, transparent 1px), linear-gradient(90deg, #f4f5f7 1px, transparent 1px); background-size: 40px 40px; }
@@ -111,39 +74,6 @@ st.markdown(f"""
             </div>
             <a href="#" class="login-btn">Log in</a>
         </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# --- HTML INJECTION: BOTTOM FLOATING STOCK TICKER ---
-st.markdown("""
-<div class="stock-ticker-wrapper">
-    <div class="stock-ticker-track">
-        <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
-        <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
-        <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
-        <span class="stock-item"><span class="stock-name">TCS</span><span class="stock-price">₹4,120.00</span><span class="stock-down">-12.30 (-0.30%)</span></span>
-        <span class="stock-item"><span class="stock-name">HDFC BANK</span><span class="stock-price">₹1,540.80</span><span class="stock-up">+8.40 (+0.55%)</span></span>
-        <span class="stock-item"><span class="stock-name">INFOSYS</span><span class="stock-price">₹1,650.25</span><span class="stock-down">-5.10 (-0.31%)</span></span>
-        <span class="stock-item"><span class="stock-name">ICICI BANK</span><span class="stock-price">₹1,115.40</span><span class="stock-up">+14.20 (+1.29%)</span></span>
-        <span class="stock-item"><span class="stock-name">ITC</span><span class="stock-price">₹435.60</span><span class="stock-up">+2.10 (+0.48%)</span></span>
-        <span class="stock-item"><span class="stock-name">SBIN</span><span class="stock-price">₹820.50</span><span class="stock-down">-4.80 (-0.58%)</span></span>
-        <span class="stock-item"><span class="stock-name">BHARTI AIRTEL</span><span class="stock-price">₹1,410.90</span><span class="stock-up">+18.30 (+1.31%)</span></span>
-        <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
-        <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
-        
-        <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
-        <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
-        <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
-        <span class="stock-item"><span class="stock-name">TCS</span><span class="stock-price">₹4,120.00</span><span class="stock-down">-12.30 (-0.30%)</span></span>
-        <span class="stock-item"><span class="stock-name">HDFC BANK</span><span class="stock-price">₹1,540.80</span><span class="stock-up">+8.40 (+0.55%)</span></span>
-        <span class="stock-item"><span class="stock-name">INFOSYS</span><span class="stock-price">₹1,650.25</span><span class="stock-down">-5.10 (-0.31%)</span></span>
-        <span class="stock-item"><span class="stock-name">ICICI BANK</span><span class="stock-price">₹1,115.40</span><span class="stock-up">+14.20 (+1.29%)</span></span>
-        <span class="stock-item"><span class="stock-name">ITC</span><span class="stock-price">₹435.60</span><span class="stock-up">+2.10 (+0.48%)</span></span>
-        <span class="stock-item"><span class="stock-name">SBIN</span><span class="stock-price">₹820.50</span><span class="stock-down">-4.80 (-0.58%)</span></span>
-        <span class="stock-item"><span class="stock-name">BHARTI AIRTEL</span><span class="stock-price">₹1,410.90</span><span class="stock-up">+18.30 (+1.31%)</span></span>
-        <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
-        <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -242,9 +172,7 @@ elif current_page == "learn":
         margin: 0 auto;
         padding-bottom: 60px;
     }
-    .breadcrumb {
-        color: #007b8a; font-weight: 600; font-size: 13px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;
-    }
+    .breadcrumb { color: #007b8a; font-weight: 600; font-size: 13px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
     .article-hr { border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 30px; }
     .article-title { color: #2c3e50; font-size: 38px; font-weight: 700; margin-bottom: 24px; line-height: 1.2; }
     .article-intro { font-size: 16px; line-height: 1.6; margin-bottom: 24px; color: #2d3748; }
@@ -255,11 +183,9 @@ elif current_page == "learn":
     .section-title { font-size: 22px; font-weight: 700; margin-top: 40px; margin-bottom: 15px; color: #0f172a; }
     .article-text { font-size: 16px; line-height: 1.7; margin-bottom: 20px; color: #1a202c; }
 
-    /* FEATURED CONTENT GRID STYLING */
     .featured-section-title { font-size: 28px; font-weight: 700; color: #0b2239; margin-top: 60px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
     .featured-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
-    .featured-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
-    .featured-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .featured-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
     .card-banner { height: 130px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #e2e8f0; padding: 10px; }
     .banner-1 { background-color: #f7f5f0; }
     .banner-2 { background-color: #ffffff; }
@@ -315,5 +241,91 @@ elif current_page == "learn":
     </body>
     </html>
     """
-    st.components.v1.html(learn_html, height=1200, scrolling=True)
-  
+    components.html(learn_html, height=1200, scrolling=True)
+
+
+# ==========================================
+# SAFE COMPONENT: BOTTOM FLOATING STOCK TICKER
+# ==========================================
+ticker_component_html = """
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    margin: 0;
+    background-color: #0f172a;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+.stock-ticker-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #0f172a;
+    color: white;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 12px 0;
+    border-top: 1px solid #334155;
+    box-sizing: border-box;
+}
+.stock-ticker-track {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 35s linear infinite;
+}
+.stock-ticker-track:hover {
+    animation-play-state: paused;
+}
+@keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+.stock-item {
+    display: inline-block;
+    margin-right: 35px;
+}
+.stock-name { font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; }
+.stock-price { margin-left: 6px; font-weight: 600; color: #f8fafc; }
+.stock-up { color: #4ade80; margin-left: 6px; font-weight: 600; }
+.stock-down { color: #f87171; margin-left: 6px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="stock-ticker-wrapper">
+    <div class="stock-ticker-track">
+        <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
+        <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
+        <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
+        <span class="stock-item"><span class="stock-name">TCS</span><span class="stock-price">₹4,120.00</span><span class="stock-down">-12.30 (-0.30%)</span></span>
+        <span class="stock-item"><span class="stock-name">HDFC BANK</span><span class="stock-price">₹1,540.80</span><span class="stock-up">+8.40 (+0.55%)</span></span>
+        <span class="stock-item"><span class="stock-name">INFOSYS</span><span class="stock-price">₹1,650.25</span><span class="stock-down">-5.10 (-0.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">ICICI BANK</span><span class="stock-price">₹1,115.40</span><span class="stock-up">+14.20 (+1.29%)</span></span>
+        <span class="stock-item"><span class="stock-name">ITC</span><span class="stock-price">₹435.60</span><span class="stock-up">+2.10 (+0.48%)</span></span>
+        <span class="stock-item"><span class="stock-name">SBIN</span><span class="stock-price">₹820.50</span><span class="stock-down">-4.80 (-0.58%)</span></span>
+        <span class="stock-item"><span class="stock-name">BHARTI AIRTEL</span><span class="stock-price">₹1,410.90</span><span class="stock-up">+18.30 (+1.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
+        <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
+        
+        <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
+        <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
+        <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
+        <span class="stock-item"><span class="stock-name">TCS</span><span class="stock-price">₹4,120.00</span><span class="stock-down">-12.30 (-0.30%)</span></span>
+        <span class="stock-item"><span class="stock-name">HDFC BANK</span><span class="stock-price">₹1,540.80</span><span class="stock-up">+8.40 (+0.55%)</span></span>
+        <span class="stock-item"><span class="stock-name">INFOSYS</span><span class="stock-price">₹1,650.25</span><span class="stock-down">-5.10 (-0.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">ICICI BANK</span><span class="stock-price">₹1,115.40</span><span class="stock-up">+14.20 (+1.29%)</span></span>
+        <span class="stock-item"><span class="stock-name">ITC</span><span class="stock-price">₹435.60</span><span class="stock-up">+2.10 (+0.48%)</span></span>
+        <span class="stock-item"><span class="stock-name">SBIN</span><span class="stock-price">₹820.50</span><span class="stock-down">-4.80 (-0.58%)</span></span>
+        <span class="stock-item"><span class="stock-name">BHARTI AIRTEL</span><span class="stock-price">₹1,410.90</span><span class="stock-up">+18.30 (+1.31%)</span></span>
+        <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
+        <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+components.html(ticker_component_html, height=45)
