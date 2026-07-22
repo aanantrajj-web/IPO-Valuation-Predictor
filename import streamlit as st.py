@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-import textwrap
+import streamlit.components.v1 as components
 
 # --- SETUP ---
 st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sidebar_state="collapsed")
@@ -152,17 +152,24 @@ if current_page == "home":
 
 
 # ==========================================
-# PAGE ROUTING: LEARN (CUSTOM ARTICLE UI)
+# PAGE ROUTING: LEARN (RENDERED HTML COMPONENT)
 # ==========================================
 elif current_page == "learn":
-    # textwrap.dedent strips out Python indentation automatically so Streamlit parses it as HTML
-    learn_html = textwrap.dedent("""
+    learn_html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
     <style>
+    body {
+        background-color: #ffffff;
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        color: #1a202c;
+        margin: 0;
+        padding: 20px;
+    }
     .article-container {
         max-width: 900px;
         margin: 0 auto;
-        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-        color: #1a202c;
         padding-bottom: 100px;
     }
     .breadcrumb {
@@ -221,7 +228,8 @@ elif current_page == "learn":
         color: #1a202c;
     }
     </style>
-
+    </head>
+    <body>
     <div class="article-container">
         <div class="breadcrumb">HOME</div>
         <hr class="article-hr">
@@ -266,5 +274,9 @@ elif current_page == "learn":
             Asset allocation involves dividing an investment portfolio among different asset categories, such as equities, fixed income, and cash equivalents. The strategic goal of diversification is to mitigate systematic risk. By spreading your investments across various sectors—such as technology, healthcare, and energy—you reduce the impact of a single market downturn on your overall portfolio. This strategy is frequently managed through <a href="#" class="teal-link">index funds</a> or <a href="#" class="teal-link">mutual funds</a>.
         </div>
     </div>
-    """)
-    st.markdown(learn_html, unsafe_allow_html=True)
+    </body>
+    </html>
+    """
+    
+    # Using st.components.v1.html completely prevents Streamlit from escaping it into a markdown code block
+    components.html(learn_html, height=1100, scrolling=True)
