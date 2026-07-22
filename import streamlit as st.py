@@ -12,7 +12,7 @@ current_page = st.query_params.get("page", "home")
 st.markdown("""
     <style>
     [data-testid="stHeader"] { display: none; }
-    .block-container { padding-top: 100px !important; padding-bottom: 80px !important; max-width: 1000px; }
+    .block-container { padding-top: 100px !important; padding-bottom: 90px !important; max-width: 1000px; }
     
     /* TOP NAVIGATION HEADER CSS */
     .custom-header-wrapper {
@@ -115,12 +115,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-
-# --- HTML INJECTION: BOTTOM FLOATING STOCK TICKER (NIFTY 50, BANK & TOP COMPANIES) ---
+# --- HTML INJECTION: BOTTOM FLOATING STOCK TICKER ---
 st.markdown("""
 <div class="stock-ticker-wrapper">
     <div class="stock-ticker-track">
-        <!-- FIRST SET OF DATA -->
         <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
         <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
         <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
@@ -134,7 +132,6 @@ st.markdown("""
         <span class="stock-item"><span class="stock-name">L&T</span><span class="stock-price">₹3,560.00</span><span class="stock-up">+42.10 (+1.19%)</span></span>
         <span class="stock-item"><span class="stock-name">HINDUNILVR</span><span class="stock-price">₹2,450.10</span><span class="stock-down">-6.20 (-0.25%)</span></span>
         
-        <!-- DUPLICATED SET FOR SEAMLESS INFINITE LOOP -->
         <span class="stock-item"><span class="stock-name">NIFTY 50</span><span class="stock-price">23,458.20</span><span class="stock-up">+145.30 (+0.62%)</span></span>
         <span class="stock-item"><span class="stock-name">NIFTY BANK</span><span class="stock-price">50,120.50</span><span class="stock-up">+320.10 (+0.64%)</span></span>
         <span class="stock-item"><span class="stock-name">RELIANCE</span><span class="stock-price">₹2,980.15</span><span class="stock-up">+24.50 (+0.83%)</span></span>
