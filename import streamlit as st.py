@@ -2,35 +2,36 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
-import textwrap
+import plotly.express as px
+import plotly.graph_objects as go
 import random
 import time
 
-# =====================================================
+# ==========================================================
 # PAGE CONFIG
-# =====================================================
+# ==========================================================
 
 st.set_page_config(
-    page_title="IPO Predictor Pro",
+    page_title="X-Invo",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# =====================================================
+# ==========================================================
 # PAGE ROUTING
-# =====================================================
+# ==========================================================
 
 page = st.query_params.get("page", "home")
 
-# =====================================================
+# ==========================================================
 # GLOBAL CSS
-# =====================================================
+# ==========================================================
 
 st.markdown("""
 <style>
 
-/* Hide Streamlit Menu */
+/* Hide Streamlit */
 
 #MainMenu{
 visibility:hidden;
@@ -48,27 +49,47 @@ visibility:hidden;
 display:none;
 }
 
-/* Main */
+/* Font */
+
+html,
+body,
+[class*="css"]{
+font-family:Inter,sans-serif;
+}
+
+/* Background */
 
 .stApp{
-background:#ffffff;
+
+background:#fafafa;
+
 background-image:
-linear-gradient(#f3f4f6 1px,transparent 1px),
-linear-gradient(90deg,#f3f4f6 1px,transparent 1px);
+
+linear-gradient(#eeeeee 1px,transparent 1px),
+
+linear-gradient(90deg,#eeeeee 1px,transparent 1px);
+
 background-size:40px 40px;
+
 }
+
+/* Main Container */
 
 .block-container{
-padding-top:90px;
+
+padding-top:130px;
+
 padding-bottom:90px;
-max-width:1300px;
+
+max-width:1400px;
+
 }
 
-/* =======================================
-HEADER
-======================================= */
+/* ==========================================================
+TOP STRIP
+========================================================== */
 
-.custom-header{
+.top-strip{
 
 position:fixed;
 
@@ -78,55 +99,125 @@ left:0;
 
 width:100%;
 
-height:72px;
+height:30px;
 
-background:white;
+background:#000;
 
 display:flex;
 
 justify-content:center;
 
-border-bottom:1px solid #e5e7eb;
+align-items:center;
 
 z-index:99999;
 
-box-shadow:0 2px 12px rgba(0,0,0,.04);
+border-bottom:1px solid #202020;
 
 }
 
-.header-inner{
+.top-inner{
 
-width:95%;
+width:96%;
 
-max-width:1500px;
+max-width:1700px;
 
 display:flex;
 
-align-items:center;
-
-justify-content:space-between;
+gap:28px;
 
 }
 
-.logo{
+.top-inner a{
 
-font-size:34px;
+color:#b8b8b8;
 
-font-weight:900;
-
-color:#111827;
-
-letter-spacing:-2px;
+font-size:13px;
 
 text-decoration:none;
 
+transition:.2s;
+
 }
+
+.top-inner a:hover{
+
+color:white;
+
+}
+
+/* ==========================================================
+HEADER
+========================================================== */
+
+.main-header{
+
+position:fixed;
+
+top:30px;
+
+left:0;
+
+width:100%;
+
+height:72px;
+
+background:#000;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:99998;
+
+border-bottom:1px solid #202020;
+
+}
+
+.main-inner{
+
+width:96%;
+
+max-width:1700px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+/* Logo */
+
+.logo{
+
+font-size:52px;
+
+font-weight:900;
+
+color:white;
+
+letter-spacing:-2px;
+
+user-select:none;
+
+}
+
+.logo span{
+
+color:#ff9d00;
+
+}
+
+/* Navigation */
 
 .nav{
 
 display:flex;
 
-gap:35px;
+gap:32px;
 
 align-items:center;
 
@@ -134,13 +225,13 @@ align-items:center;
 
 .nav a{
 
+color:white;
+
 text-decoration:none;
 
-font-size:15px;
+font-size:17px;
 
-font-weight:600;
-
-color:#475569;
+font-weight:500;
 
 transition:.25s;
 
@@ -148,99 +239,127 @@ transition:.25s;
 
 .nav a:hover{
 
-color:#2563eb;
+color:#ff9d00;
 
 }
 
-.search{
+/* Right */
 
-width:330px;
+.right{
 
-padding:11px 18px;
+display:flex;
 
-background:#f3f4f6;
+align-items:center;
 
-border-radius:999px;
-
-border:none;
-
-outline:none;
-
-font-size:14px;
+gap:18px;
 
 }
 
 .login{
 
-text-decoration:none;
+color:white;
 
 font-weight:700;
 
-color:#111827;
+cursor:pointer;
 
 }
 
-/* =======================================
-Hero
-======================================= */
+.subscribe{
+
+background:white;
+
+color:black;
+
+padding:9px 18px;
+
+border-radius:4px;
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+.subscribe:hover{
+
+background:#ff9d00;
+
+}
+
+.search{
+
+font-size:24px;
+
+color:white;
+
+cursor:pointer;
+
+}
+
+/* ==========================================================
+HEADINGS
+========================================================== */
 
 .hero-small{
 
 color:#2563eb;
 
-font-size:13px;
+font-size:14px;
 
 font-weight:700;
 
 letter-spacing:2px;
 
-margin-bottom:10px;
+margin-bottom:8px;
 
 }
 
 .hero-title{
 
-font-size:58px;
+font-size:62px;
 
-font-weight:800;
+font-weight:900;
 
 line-height:1.05;
 
 color:#111827;
 
+margin-bottom:18px;
+
 }
 
 .hero-title span{
 
-font-style:italic;
-
 font-family:Georgia;
+
+font-style:italic;
 
 color:#94a3b8;
 
 }
 
-.hero-desc{
+.hero-text{
 
 font-size:18px;
+
+line-height:1.8;
 
 color:#475569;
 
 max-width:700px;
 
-margin-top:20px;
-
-line-height:1.7;
-
 }
 
-/* =======================================
-Buttons
-======================================= */
+/* Buttons */
 
 .stButton>button{
 
-width:100%;
+background:#2563eb;
+
+color:white;
 
 border:none;
 
@@ -250,9 +369,7 @@ padding:14px;
 
 font-weight:700;
 
-background:#2563eb;
-
-color:white;
+width:100%;
 
 transition:.25s;
 
@@ -275,65 +392,106 @@ border-radius:10px;
 
 }
 
+/* Cards */
+
+.metric-card{
+
+background:white;
+
+padding:22px;
+
+border-radius:16px;
+
+border:1px solid #E5E7EB;
+
+box-shadow:0 5px 16px rgba(0,0,0,.05);
+
+}
+
 /* Divider */
 
 hr{
 
-border:0;
+border:none;
 
-border-top:1px solid #e5e7eb;
+border-top:1px solid #E5E7EB;
+
+margin:30px 0;
 
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# =====================================================
-# NAVBAR
-# =====================================================
+# ==========================================================
+HEADER
+# ==========================================================
 
-st.markdown(f"""
+st.markdown("""
 
-<div class="custom-header">
+<div class="top-strip">
 
-<div class="header-inner">
+<div class="top-inner">
 
-<a class="logo" href="?page=home" target="_self">
-A.
-</a>
+<a href="#">Documentation</a>
 
-<div class="nav">
+<a href="#">API</a>
 
-<a href="?page=home" target="_self">
-Home
-</a>
+<a href="#">Pricing</a>
 
-<a href="?page=learn" target="_self">
-Learn
-</a>
+<a href="#">Enterprise</a>
 
-<a href="#">
-Markets
-</a>
-
-<a href="#">
-Investors
-</a>
-
-<a href="#">
-Tools
-</a>
+<a href="#">Support</a>
 
 </div>
 
-<div style="display:flex;align-items:center;gap:20px;">
+</div>
 
-<input class="search"
-placeholder="Search companies..." />
+<div class="main-header">
 
-<a class="login">
-Login
-</a>
+<div class="main-inner">
+
+<div class="logo">
+
+X<span>-</span>Invo
+
+</div>
+
+<div class="nav">
+
+<a href="?page=home" target="_self">Home</a>
+
+<a href="?page=predictor" target="_self">IPO Predictor</a>
+
+<a href="?page=markets" target="_self">Markets</a>
+
+<a href="?page=news" target="_self">News</a>
+
+<a href="?page=learn" target="_self">Learn</a>
+
+<a href="?page=tools" target="_self">Tools</a>
+
+</div>
+
+<div class="right">
+
+<div class="login">
+
+Sign In
+
+</div>
+
+<div class="subscribe">
+
+Subscribe
+
+</div>
+
+<div class="search">
+
+🔍
+
+</div>
 
 </div>
 
@@ -342,209 +500,539 @@ Login
 </div>
 
 """, unsafe_allow_html=True)
-# =====================================================
+# ==========================================================
 # HOME PAGE
-# =====================================================
+# ==========================================================
 
 if page == "home":
 
-    # -----------------------------
-    # Training Data
-    # -----------------------------
+    st.markdown("""
+    <style>
 
-    df = pd.DataFrame({
+    .hero-wrapper{
 
-        "Revenue":[3000,25000,250,20000,500,804],
+        display:flex;
 
-        "Profit":[12,15,-40,8,-20,-11],
+        align-items:center;
 
-        "CashBurn":[0,0,100,0,150,90],
+        justify-content:space-between;
 
-        "Valuation":[15000,125000,1200,80000,2500,5500]
+        gap:60px;
+
+        margin-top:30px;
+
+        margin-bottom:70px;
+
+    }
+
+    .hero-left{
+
+        flex:1;
+
+    }
+
+    .hero-right{
+
+        flex:1;
+
+    }
+
+    .hero-badge{
+
+        display:inline-block;
+
+        background:#E0F2FE;
+
+        color:#2563EB;
+
+        padding:8px 16px;
+
+        border-radius:999px;
+
+        font-weight:700;
+
+        font-size:13px;
+
+        margin-bottom:20px;
+
+    }
+
+    .dashboard-card{
+
+        background:white;
+
+        border-radius:18px;
+
+        padding:25px;
+
+        border:1px solid #E5E7EB;
+
+        box-shadow:0 10px 25px rgba(0,0,0,.05);
+
+    }
+
+    .big-number{
+
+        font-size:34px;
+
+        font-weight:800;
+
+        color:#111827;
+
+    }
+
+    .green{
+
+        color:#16A34A;
+
+        font-weight:700;
+
+    }
+
+    .red{
+
+        color:#DC2626;
+
+        font-weight:700;
+
+    }
+
+    </style>
+
+    """, unsafe_allow_html=True)
+
+    # ---------------- HERO ----------------
+
+    left,right = st.columns([1.2,1])
+
+    with left:
+
+        st.markdown("""
+        <div class="hero-badge">
+        AI Powered IPO Intelligence
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="hero-title">
+
+        Predict IPO Prices<br>
+
+        Before The Market<br>
+
+        <span>Prices Them.</span>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="hero-text">
+
+        X-Invo combines Machine Learning,
+        financial fundamentals,
+        institutional demand,
+        and market sentiment
+        to estimate a company's fair IPO valuation.
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.write("")
+
+        colA,colB = st.columns(2)
+
+        with colA:
+
+            st.button("🚀 Start Prediction")
+
+        with colB:
+
+            st.button("📘 Learn IPOs")
+
+    with right:
+
+        st.markdown("""
+        <div class="dashboard-card">
+
+        <h3>Market Snapshot</h3>
+
+        """, unsafe_allow_html=True)
+
+        m1,m2 = st.columns(2)
+
+        with m1:
+
+            st.metric(
+                "NIFTY 50",
+                "23,458",
+                "+0.62%"
+            )
+
+            st.metric(
+                "NASDAQ",
+                "18,972",
+                "+1.13%"
+            )
+
+        with m2:
+
+            st.metric(
+                "SENSEX",
+                "77,824",
+                "+0.59%"
+            )
+
+            st.metric(
+                "Dow Jones",
+                "42,180",
+                "-0.24%"
+            )
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.write("")
+    st.write("")
+
+    # =====================================================
+    # QUICK STATS
+    # =====================================================
+
+    a,b,c,d = st.columns(4)
+
+    with a:
+
+        st.metric(
+            "Companies Analysed",
+            "5,284",
+            "+182"
+        )
+
+    with b:
+
+        st.metric(
+            "Prediction Accuracy",
+            "94.8%",
+            "+2.1%"
+        )
+
+    with c:
+
+        st.metric(
+            "Average IPO Gain",
+            "18.6%",
+            "+4.8%"
+        )
+
+    with d:
+
+        st.metric(
+            "Market Mood",
+            "Bullish",
+            "▲"
+        )
+
+    st.divider()
+
+    # =====================================================
+    # FEATURED IPOs
+    # =====================================================
+
+    st.subheader("🔥 Trending IPOs")
+
+    c1,c2,c3 = st.columns(3)
+
+    with c1:
+
+        st.markdown("""
+        <div class="dashboard-card">
+
+        <h3>Stripe</h3>
+
+        <p>Expected Valuation</p>
+
+        <div class="big-number">
+
+        $92B
+
+        </div>
+
+        <br>
+
+        <span class="green">
+
+        Strong Demand ▲
+
+        </span>
+
+        </div>
+
+        """, unsafe_allow_html=True)
+
+    with c2:
+
+        st.markdown("""
+        <div class="dashboard-card">
+
+        <h3>Databricks</h3>
+
+        <p>Expected Valuation</p>
+
+        <div class="big-number">
+
+        $62B
+
+        </div>
+
+        <br>
+
+        <span class="green">
+
+        High Institutional Interest
+
+        </span>
+
+        </div>
+
+        """, unsafe_allow_html=True)
+
+    with c3:
+
+        st.markdown("""
+        <div class="dashboard-card">
+
+        <h3>SpaceX</h3>
+
+        <p>Expected Valuation</p>
+
+        <div class="big-number">
+
+        $210B
+
+        </div>
+
+        <br>
+
+        <span class="green">
+
+        Exceptional Growth
+
+        </span>
+
+        </div>
+
+        """, unsafe_allow_html=True)
+
+    st.divider()
+
+    st.subheader("Why X-Invo?")
+
+    c1,c2,c3 = st.columns(3)
+
+    with c1:
+
+        st.info("""
+
+### 🤖 AI Valuation
+
+Uses Machine Learning to estimate intrinsic company valuation from financial metrics.
+
+""")
+
+    with c2:
+
+        st.info("""
+
+### 📈 Market Sentiment
+
+Adjusts IPO pricing using investor demand and market conditions.
+
+""")
+
+    with c3:
+
+        st.info("""
+
+### ⚡ Real-Time Dashboard
+
+Track valuations, IPOs and market activity in one place.
+
+""")
+
+    st.divider()
+    # ==========================================================
+# IPO PREDICTOR PAGE
+# ==========================================================
+
+elif page == "predictor":
+
+    st.title("📈 IPO Predictor")
+
+    st.caption(
+        "Estimate an IPO price using financial fundamentals and market sentiment."
+    )
+
+    st.divider()
+
+    # -------------------------------------------------------
+    # TRAINING DATA
+    # -------------------------------------------------------
+
+    training = pd.DataFrame({
+
+        "Revenue":[
+            3000,
+            25000,
+            250,
+            20000,
+            500,
+            804,
+            1200,
+            5000
+        ],
+
+        "ProfitMargin":[
+            12,
+            15,
+            -40,
+            8,
+            -20,
+            -11,
+            6,
+            14
+        ],
+
+        "CashBurn":[
+            0,
+            0,
+            100,
+            0,
+            150,
+            90,
+            40,
+            0
+        ],
+
+        "Valuation":[
+            15000,
+            125000,
+            1200,
+            80000,
+            2500,
+            5500,
+            8500,
+            31000
+        ]
 
     })
 
-    X = df[["Revenue","Profit","CashBurn"]]
+    X = training[
+        ["Revenue","ProfitMargin","CashBurn"]
+    ]
 
-    y = df["Valuation"]
+    y = training["Valuation"]
 
     model = LinearRegression()
 
     model.fit(X,y)
 
-    # -----------------------------
-    # HERO
-    # -----------------------------
+    # -------------------------------------------------------
+    # INPUTS
+    # -------------------------------------------------------
 
-    st.markdown(
-        """
-        <div class='hero-small'>
-        AI VALUATION PLATFORM
-        </div>
-
-        <div class='hero-title'>
-        Predict real-world IPOs<br>
-        without getting lost in<br>
-        <span>valuation chaos.</span>
-        </div>
-
-        <div class='hero-desc'>
-        Estimate IPO valuation using machine learning,
-        financial fundamentals and market sentiment.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.write("")
-    st.write("")
-
-    # -----------------------------
-    # DASHBOARD CARDS
-    # -----------------------------
-
-    c1,c2,c3,c4 = st.columns(4)
-
-    with c1:
-        st.metric(
-            "Global IPOs",
-            "2,341",
-            "+12%"
-        )
-
-    with c2:
-        st.metric(
-            "Avg IPO Gain",
-            "18.6%",
-            "+4%"
-        )
-
-    with c3:
-        st.metric(
-            "Market Sentiment",
-            "Bullish",
-            "▲"
-        )
-
-    with c4:
-        st.metric(
-            "Prediction Accuracy",
-            "94.2%",
-            "+2%"
-        )
-
-    st.divider()
-
-    # -----------------------------
-    # INPUT SECTION
-    # -----------------------------
-
-    st.header("📊 Phase 1 • Company Fundamentals")
+    st.subheader("Phase 1 • Financial Fundamentals")
 
     company = st.text_input(
         "Company Name",
         "Reddit"
     )
 
-    col1,col2,col3 = st.columns(3)
+    c1,c2,c3 = st.columns(3)
 
-    with col1:
+    with c1:
 
         revenue = st.number_input(
-
             "Revenue ($ Millions)",
-
+            min_value=0.0,
             value=804.0
-
         )
 
-    with col2:
+    with c2:
 
         margin = st.number_input(
-
             "Profit Margin (%)",
-
             value=-11.0
-
         )
 
-    with col3:
+    with c3:
 
         burn = st.number_input(
-
             "Cash Burn ($ Millions)",
-
+            min_value=0.0,
             value=90.0
-
         )
 
-    prediction = pd.DataFrame(
+    input_df = pd.DataFrame(
 
-        [[revenue,margin,burn]],
+        [[
+            revenue,
+            margin,
+            burn
+        ]],
 
-        columns=["Revenue","Profit","CashBurn"]
+        columns=[
+            "Revenue",
+            "ProfitMargin",
+            "CashBurn"
+        ]
 
     )
 
-    valuation = max(
-
-        model.predict(prediction)[0],
-
+    intrinsic = max(
+        model.predict(input_df)[0],
         100
-
     )
-
-    st.progress(33)
 
     if st.button("Calculate Intrinsic Valuation"):
 
         st.success(
-
-            f"Estimated Company Value : **${valuation:,.2f} Million**"
-
-        )
-
-        st.info(
-
-            "This valuation is produced by a Machine Learning model trained on historical financial fundamentals."
-
+            f"Intrinsic Valuation: ${intrinsic:,.2f} Million"
         )
 
     st.divider()
 
-    # -----------------------------
-    # SHARE DILUTION
-    # -----------------------------
+    # -------------------------------------------------------
+    # SHARE OFFER
+    # -------------------------------------------------------
 
-    st.header("🏦 Phase 2 • IPO Structure")
+    st.subheader("Phase 2 • IPO Structure")
 
     shares = st.number_input(
 
         "Shares Offered (Millions)",
 
+        min_value=1.0,
+
         value=150.0
 
     )
 
-    base_price = valuation / shares
-
-    st.progress(66)
+    base_price = intrinsic / shares
 
     if st.button("Calculate Base IPO Price"):
 
         st.success(
 
-            f"Base IPO Price : **${base_price:.2f} / share**"
+            f"Base IPO Price : ${base_price:.2f}"
 
         )
 
     st.divider()
 
-    # -----------------------------
+    # -------------------------------------------------------
     # MARKET SENTIMENT
-    # -----------------------------
+    # -------------------------------------------------------
 
-    st.header("📈 Phase 3 • Market Sentiment")
+    st.subheader("Phase 3 • Supply & Demand")
 
     left,right = st.columns(2)
 
@@ -560,11 +1048,15 @@ if page == "home":
 
     with right:
 
-        sp = st.number_input(
+        market = st.slider(
 
-            "S&P 500 YTD Return (%)",
+            "Overall Market Mood",
 
-            value=12.0
+            -20,
+
+            20,
+
+            12
 
         )
 
@@ -584,11 +1076,11 @@ if page == "home":
 
     climate = 0
 
-    if sp>=10:
+    if market >= 10:
 
         climate = 0.15
 
-    elif sp<=0:
+    elif market <= 0:
 
         climate = -0.15
 
@@ -597,9 +1089,7 @@ if page == "home":
         min(
 
             1+
-
             oversub_modifier+
-
             climate,
 
             2.5
@@ -612,7 +1102,7 @@ if page == "home":
 
     st.slider(
 
-        "Calculated Market Premium",
+        "Market Premium",
 
         0.5,
 
@@ -624,659 +1114,1395 @@ if page == "home":
 
     )
 
-    st.progress(100)
+    final_value = intrinsic*premium
 
-    if st.button("Predict Final IPO Price"):
+    final_price = final_value/shares
 
-        final_value = valuation*premium
+    if st.button("Predict IPO Price"):
 
-        final_price = final_value/shares
+        a,b,c = st.columns(3)
 
-        c1,c2,c3 = st.columns(3)
+        with a:
 
-        c1.metric(
+            st.metric(
 
-            "Intrinsic Value",
+                "Intrinsic Value",
 
-            f"${valuation:,.0f}M"
+                f"${intrinsic:,.0f} M"
 
-        )
+            )
 
-        c2.metric(
+        with b:
 
-            "Market Premium",
+            st.metric(
 
-            f"{premium:.2f}x"
+                "Market Premium",
 
-        )
+                f"{premium:.2f}x"
 
-        c3.metric(
+            )
 
-            "IPO Price",
+        with c:
 
-            f"${final_price:.2f}"
+            st.metric(
 
-        )
+                "Predicted IPO",
+
+                f"${final_price:.2f}"
+
+            )
 
         st.success(
 
-            f"🎯 Predicted IPO Price for **{company}** : **${final_price:.2f} per share**"
+            f"Predicted IPO Price for {company}: ${final_price:.2f}"
 
         )
-        # =====================================================
-# LEARN PAGE
-# =====================================================
-
-elif page == "learn":
-
-    st.markdown("""
-    <style>
-
-    .article{
-
-        max-width:1100px;
-
-        margin:auto;
-
-    }
-
-    .category{
-
-        color:#2563eb;
-
-        font-size:13px;
-
-        letter-spacing:2px;
-
-        font-weight:700;
-
-        margin-bottom:10px;
-
-    }
-
-    .title{
-
-        font-size:52px;
-
-        font-weight:800;
-
-        color:#111827;
-
-        line-height:1.1;
-
-        margin-bottom:20px;
-
-    }
-
-    .intro{
-
-        color:#475569;
-
-        font-size:18px;
-
-        line-height:1.8;
-
-        margin-bottom:30px;
-
-    }
-
-    .section{
-
-        font-size:30px;
-
-        font-weight:700;
-
-        margin-top:40px;
-
-        margin-bottom:20px;
-
-    }
-
-    .text{
-
-        color:#475569;
-
-        font-size:17px;
-
-        line-height:1.8;
-
-    }
-
-    .card{
-
-        background:white;
-
-        border-radius:16px;
-
-        border:1px solid #E5E7EB;
-
-        padding:25px;
-
-        box-shadow:0 6px 20px rgba(0,0,0,.04);
-
-        height:100%;
-
-    }
-
-    .card h3{
-
-        margin-top:0;
-
-        color:#111827;
-
-    }
-
-    .card p{
-
-        color:#64748B;
-
-        line-height:1.7;
-
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="article">
-
-    <div class="category">
-    INVESTING FOR BEGINNERS
-    </div>
-
-    <div class="title">
-    Understanding IPO Investing
-    </div>
-
-    <div class="intro">
-
-    An Initial Public Offering (IPO) is the first time a private
-    company offers its shares to the public. IPO investing allows
-    investors to participate in the early stages of publicly traded
-    companies.
-
-    </div>
-
-    </div>
-
-    """, unsafe_allow_html=True)
-
-    st.markdown("## What is an IPO?")
-
-    st.write("""
-An Initial Public Offering converts a private company into a publicly traded company.
-
-Companies generally launch IPOs to:
-
-- Raise fresh capital
-- Expand operations
-- Pay existing debt
-- Improve credibility
-- Allow early investors to exit
-""")
 
     st.divider()
 
-    st.markdown("## Why Valuation Matters")
+    # -------------------------------------------------------
+    # CHART
+    # -------------------------------------------------------
 
-    st.write("""
+    chart = pd.DataFrame({
 
-The biggest challenge during an IPO is determining the company's valuation.
+        "Stage":[
 
-Investment banks estimate valuation using:
+            "Intrinsic",
 
-- Revenue Growth
-- EBITDA
-- Profit Margins
-- Comparable Companies
-- Discounted Cash Flow
-- Market Conditions
+            "Adjusted"
 
-Our AI model combines financial data with market sentiment to estimate a fair IPO price.
+        ],
 
-""")
+        "Valuation":[
 
-    st.divider()
+            intrinsic,
 
-    st.markdown("## IPO Pricing Process")
+            final_value
 
-    step1,step2,step3 = st.columns(3)
+        ]
 
-    with step1:
+    })
 
-        st.info("""
+    fig = px.bar(
 
-### Step 1
+        chart,
 
-Collect Financial Statements
+        x="Stage",
 
-Revenue
+        y="Valuation",
 
-Profit
+        text="Valuation",
 
-Cash Flow
+        color="Stage"
 
-Growth
+    )
 
-""")
+    fig.update_layout(
 
-    with step2:
+        height=420,
 
-        st.info("""
+        template="plotly_white",
 
-### Step 2
+        showlegend=False
 
-Estimate Enterprise Value
+    )
 
-Comparable Analysis
+    st.plotly_chart(
 
-DCF
+        fig,
 
-ML Models
+        use_container_width=True
 
-Sector Multiples
+    )
+    # ==========================================================
+# MARKETS PAGE
+# ==========================================================
 
-""")
+elif page == "markets":
 
-    with step3:
+    st.title("🌍 Global Markets Dashboard")
 
-        st.info("""
-
-### Step 3
-
-Roadshow & Demand
-
-Book Building
-
-Institutional Demand
-
-Retail Demand
-
-Final Price
-
-""")
+    st.caption("Track major indices, sectors and market activity.")
 
     st.divider()
 
-    st.markdown("## Featured Learning Resources")
+    # ======================================================
+    # TOP MARKET METRICS
+    # ======================================================
 
     c1,c2,c3,c4 = st.columns(4)
 
     with c1:
+        st.metric(
+            "NIFTY 50",
+            "23,458.20",
+            "+145.30"
+        )
 
-        st.markdown("""
+    with c2:
+        st.metric(
+            "SENSEX",
+            "77,824.12",
+            "+410.55"
+        )
 
-<div class="card">
+    with c3:
+        st.metric(
+            "NASDAQ",
+            "18,975.10",
+            "+185.40"
+        )
 
-<h3>📘 Investing Basics</h3>
+    with c4:
+        st.metric(
+            "Dow Jones",
+            "42,180.40",
+            "-82.10"
+        )
 
-<p>
+    st.divider()
 
-Learn how the stock market works,
-risk management,
-portfolio diversification
-and compounding.
+    # ======================================================
+    # MARKET PERFORMANCE CHART
+    # ======================================================
 
-</p>
+    st.subheader("Market Performance")
 
-</div>
+    dates = pd.date_range("2026-01-01", periods=30)
 
-""", unsafe_allow_html=True)
+    values = np.cumsum(np.random.normal(0.8, 8, 30)) + 23000
+
+    market_df = pd.DataFrame({
+        "Date": dates,
+        "Index": values
+    })
+
+    fig = px.line(
+        market_df,
+        x="Date",
+        y="Index",
+        template="plotly_white"
+    )
+
+    fig.update_traces(line_width=3)
+
+    fig.update_layout(
+        height=450
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    # ======================================================
+    # SECTOR PERFORMANCE
+    # ======================================================
+
+    st.subheader("Sector Performance")
+
+    sector_df = pd.DataFrame({
+
+        "Sector":[
+            "Technology",
+            "Finance",
+            "Healthcare",
+            "Energy",
+            "FMCG",
+            "Automobile"
+        ],
+
+        "Return":[
+            18,
+            12,
+            9,
+            6,
+            4,
+            11
+        ]
+
+    })
+
+    fig = px.bar(
+
+        sector_df,
+
+        x="Sector",
+
+        y="Return",
+
+        color="Return",
+
+        template="plotly_white"
+
+    )
+
+    fig.update_layout(
+        height=420
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    # ======================================================
+    # PORTFOLIO DISTRIBUTION
+    # ======================================================
+
+    left,right = st.columns(2)
+
+    with left:
+
+        st.subheader("Market Capitalization")
+
+        pie = px.pie(
+
+            names=[
+                "Large Cap",
+                "Mid Cap",
+                "Small Cap"
+            ],
+
+            values=[
+                62,
+                23,
+                15
+            ],
+
+            hole=.45
+
+        )
+
+        pie.update_layout(
+            height=400
+        )
+
+        st.plotly_chart(
+            pie,
+            use_container_width=True
+        )
+
+    with right:
+
+        st.subheader("Top Gainers")
+
+        gainers = pd.DataFrame({
+
+            "Company":[
+                "Reliance",
+                "Infosys",
+                "ICICI Bank",
+                "L&T",
+                "Tata Motors"
+            ],
+
+            "Gain (%)":[
+                4.2,
+                3.7,
+                3.1,
+                2.9,
+                2.8
+            ]
+
+        })
+
+        st.dataframe(
+            gainers,
+            use_container_width=True
+        )
+
+    st.divider()
+
+    # ======================================================
+    # IPO CALENDAR
+    # ======================================================
+
+    st.subheader("Upcoming IPO Calendar")
+
+    ipo = pd.DataFrame({
+
+        "Company":[
+            "Stripe",
+            "Databricks",
+            "Discord",
+            "Canva",
+            "SpaceX"
+        ],
+
+        "Expected Month":[
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+
+        "Expected Valuation ($B)":[
+            92,
+            62,
+            18,
+            40,
+            210
+        ]
+
+    })
+
+    st.dataframe(
+        ipo,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    # ======================================================
+    # MARKET NEWS
+    # ======================================================
+
+    st.subheader("Today's Highlights")
+
+    news1,news2 = st.columns(2)
+
+    with news1:
+
+        st.info("""
+
+### 📈 Technology Stocks Rally
+
+Technology companies continue leading market gains amid
+strong quarterly earnings and increased AI investments.
+
+""")
+
+    with news2:
+
+        st.info("""
+
+### 💰 IPO Market Reopens
+
+Several billion-dollar startups are expected to launch IPOs
+over the coming months.
+
+""")
+        # ==========================================================
+# NEWS PAGE
+# ==========================================================
+
+elif page == "news":
+
+    st.title("📰 Financial News")
+
+    st.caption(
+        "Latest market news, IPO updates and financial insights."
+    )
+
+    st.divider()
+
+    # ======================================================
+    # SEARCH
+    # ======================================================
+
+    search = st.text_input(
+        "🔍 Search News",
+        placeholder="Search companies or topics..."
+    )
+
+    st.write("")
+
+    # ======================================================
+    # FEATURED STORY
+    # ======================================================
+
+    st.markdown("""
+    <div style="
+        background:#111827;
+        color:white;
+        padding:35px;
+        border-radius:18px;
+        margin-bottom:25px;
+    ">
+        <h2 style="margin-bottom:10px;">
+        🚀 AI Companies Continue Leading IPO Wave
+        </h2>
+
+        <p style="font-size:17px;line-height:1.8;">
+        Investor demand for artificial intelligence startups remains
+        exceptionally strong. Analysts expect several billion-dollar
+        IPOs during the next twelve months.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ======================================================
+    # TOP STORIES
+    # ======================================================
+
+    st.subheader("Top Stories")
+
+    c1,c2 = st.columns(2)
+
+    with c1:
+
+        st.container(border=True)
+
+        st.markdown("### 📈 Markets Close Higher")
+
+        st.write("""
+Technology and banking stocks pushed
+major indices higher after strong
+earnings reports.
+""")
+
+        st.caption("2 hours ago")
 
     with c2:
 
-        st.markdown("""
+        st.container(border=True)
 
-<div class="card">
+        st.markdown("### 💰 IPO Pipeline Expands")
 
-<h3>📊 Financial Statements</h3>
+        st.write("""
+Investment banks expect more than
+30 major IPOs over the coming year.
+""")
 
-<p>
+        st.caption("3 hours ago")
 
-Understand Income Statements,
-Balance Sheets,
-Cash Flow Statements
-and financial ratios.
+    st.write("")
 
-</p>
-
-</div>
-
-""", unsafe_allow_html=True)
+    c3,c4 = st.columns(2)
 
     with c3:
 
-        st.markdown("""
+        st.container(border=True)
 
-<div class="card">
+        st.markdown("### 🤖 AI Sector Outperforms")
 
-<h3>🤖 AI Valuation</h3>
+        st.write("""
+Artificial Intelligence companies
+continue outperforming traditional
+technology firms.
+""")
 
-<p>
-
-Discover how Machine Learning
-can estimate company valuation
-using financial metrics.
-
-</p>
-
-</div>
-
-""", unsafe_allow_html=True)
+        st.caption("5 hours ago")
 
     with c4:
 
+        st.container(border=True)
+
+        st.markdown("### 🌎 Global Markets Mixed")
+
+        st.write("""
+European markets remained flat while
+US technology stocks gained.
+""")
+
+        st.caption("6 hours ago")
+
+    st.divider()
+
+    # ======================================================
+    # MARKET MOVERS
+    # ======================================================
+
+    st.subheader("Today's Market Movers")
+
+    movers = pd.DataFrame({
+
+        "Company":[
+            "NVIDIA",
+            "Apple",
+            "Microsoft",
+            "Reliance",
+            "Infosys",
+            "TCS",
+            "ICICI Bank",
+            "Amazon",
+            "Tesla",
+            "Meta"
+        ],
+
+        "Price":[
+            1298,
+            214,
+            485,
+            2980,
+            1650,
+            4120,
+            1115,
+            198,
+            312,
+            615
+        ],
+
+        "Change %":[
+            5.8,
+            2.4,
+            1.9,
+            0.8,
+            -0.3,
+            -0.4,
+            1.2,
+            2.1,
+            3.4,
+            2.7
+        ]
+
+    })
+
+    st.dataframe(
+        movers,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.divider()
+
+    # ======================================================
+    # TRENDING TOPICS
+    # ======================================================
+
+    st.subheader("Trending Topics")
+
+    a,b,c,d = st.columns(4)
+
+    with a:
+        st.success("AI")
+
+    with b:
+        st.success("IPO")
+
+    with c:
+        st.success("NVIDIA")
+
+    with d:
+        st.success("Interest Rates")
+
+    st.divider()
+
+    # ======================================================
+    # EDITOR PICKS
+    # ======================================================
+
+    st.subheader("Editor's Picks")
+
+    articles = [
+
+        {
+            "title":"How IPO Valuation Works",
+            "time":"8 min read"
+        },
+
+        {
+            "title":"Understanding P/E Ratio",
+            "time":"6 min read"
+        },
+
+        {
+            "title":"DCF Valuation Explained",
+            "time":"10 min read"
+        },
+
+        {
+            "title":"Machine Learning in Finance",
+            "time":"12 min read"
+        }
+
+    ]
+
+    for item in articles:
+
+        st.markdown(f"""
+        <div style="
+        background:white;
+        padding:20px;
+        border-radius:14px;
+        border:1px solid #E5E7EB;
+        margin-bottom:12px;
+        ">
+        <h4>{item['title']}</h4>
+        <p>{item['time']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        # ==========================================================
+# LEARN PAGE
+# ==========================================================
+
+elif page == "learn":
+
+    st.title("📚 X-Invo Academy")
+
+    st.caption(
+        "Master Investing, IPOs and Financial Analysis."
+    )
+
+    st.divider()
+
+    # ======================================================
+    # HERO
+    # ======================================================
+
+    st.markdown("""
+    <div style="
+    background:linear-gradient(135deg,#0F172A,#1E293B);
+    padding:45px;
+    border-radius:18px;
+    color:white;
+    margin-bottom:30px;
+    ">
+    <h1 style="margin-bottom:15px;">
+    Learn Investing From Scratch
+    </h1>
+
+    <p style="font-size:18px;line-height:1.8;">
+    Whether you're a beginner or an experienced investor,
+    X-Invo Academy teaches everything from financial
+    statements to IPO valuation using interactive examples.
+    </p>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ======================================================
+    # LEARNING PATH
+    # ======================================================
+
+    st.subheader("Learning Roadmap")
+
+    c1,c2,c3,c4 = st.columns(4)
+
+    with c1:
+        st.success("""
+### Level 1
+
+Stock Market Basics
+
+• Shares
+
+• Exchanges
+
+• Investors
+
+""")
+
+    with c2:
+        st.success("""
+### Level 2
+
+Financial Statements
+
+• Revenue
+
+• Profit
+
+• Cash Flow
+
+""")
+
+    with c3:
+        st.success("""
+### Level 3
+
+Valuation
+
+• P/E Ratio
+
+• DCF
+
+• Comparable Analysis
+
+""")
+
+    with c4:
+        st.success("""
+### Level 4
+
+IPO Investing
+
+• Book Building
+
+• Premium
+
+• Listing Gain
+
+""")
+
+    st.divider()
+
+    # ======================================================
+    # COURSES
+    # ======================================================
+
+    st.subheader("Featured Courses")
+
+    a,b,c = st.columns(3)
+
+    with a:
+
         st.markdown("""
+<div style="
+background:white;
+padding:25px;
+border-radius:15px;
+border:1px solid #E5E7EB;
+">
 
-<div class="card">
+## 📈 Stock Market
 
-<h3>📈 Market Psychology</h3>
+Learn how stock markets operate.
 
-<p>
+⭐ Beginner
 
-Understand oversubscription,
-market hype,
-investor demand
-and IPO momentum.
-
-</p>
+⏱ 4 Hours
 
 </div>
+""", unsafe_allow_html=True)
 
+    with b:
+
+        st.markdown("""
+<div style="
+background:white;
+padding:25px;
+border-radius:15px;
+border:1px solid #E5E7EB;
+">
+
+## 💰 Company Valuation
+
+Master valuation techniques.
+
+⭐ Intermediate
+
+⏱ 6 Hours
+
+</div>
+""", unsafe_allow_html=True)
+
+    with c:
+
+        st.markdown("""
+<div style="
+background:white;
+padding:25px;
+border-radius:15px;
+border:1px solid #E5E7EB;
+">
+
+## 🚀 IPO Analysis
+
+Predict IPO pricing using AI.
+
+⭐ Advanced
+
+⏱ 5 Hours
+
+</div>
 """, unsafe_allow_html=True)
 
     st.divider()
 
-    st.markdown("## Investment Tips")
+    # ======================================================
+    # FINANCE GLOSSARY
+    # ======================================================
 
-    st.success("""
+    st.subheader("Finance Glossary")
 
-✅ Invest for the long term
+    glossary = pd.DataFrame({
 
-✅ Diversify your portfolio
+        "Term":[
 
-✅ Read the company's prospectus
+            "Revenue",
 
-✅ Never invest based only on hype
+            "EBITDA",
 
-✅ Understand company fundamentals before buying
+            "P/E Ratio",
+
+            "Cash Burn",
+
+            "Market Cap",
+
+            "Book Value",
+
+            "Intrinsic Value",
+
+            "IPO"
+
+        ],
+
+        "Meaning":[
+
+            "Company Sales",
+
+            "Operating Earnings",
+
+            "Price to Earnings",
+
+            "Cash Spent Per Period",
+
+            "Company Value",
+
+            "Net Asset Value",
+
+            "True Estimated Worth",
+
+            "Initial Public Offering"
+
+        ]
+
+    })
+
+    st.dataframe(
+        glossary,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.divider()
+
+    # ======================================================
+    # VIDEO LESSONS
+    # ======================================================
+
+    st.subheader("Recommended Lessons")
+
+    x,y = st.columns(2)
+
+    with x:
+
+        st.info("""
+
+### 🎥 Understanding IPOs
+
+Duration: 18 mins
+
+Difficulty: Beginner
 
 """)
+
+    with y:
+
+        st.info("""
+
+### 🎥 Reading Balance Sheets
+
+Duration: 24 mins
+
+Difficulty: Intermediate
+
+""")
+
+    st.divider()
+
+    # ======================================================
+    # QUIZ
+    # ======================================================
+
+    st.subheader("Quick Quiz")
+
+    q = st.radio(
+
+        "What does IPO stand for?",
+
+        [
+
+            "International Purchase Order",
+
+            "Initial Public Offering",
+
+            "Internal Pricing Option",
+
+            "Investment Purchase Opportunity"
+
+        ]
+
+    )
+
+    if st.button("Check Answer"):
+
+        if q == "Initial Public Offering":
+
+            st.success("✅ Correct!")
+
+        else:
+
+            st.error("❌ Incorrect. The correct answer is Initial Public Offering.")
+
+    st.divider()
+
+    # ======================================================
+    # CERTIFICATION
+    # ======================================================
+
+    st.subheader("Complete Your Learning")
+
+    progress = st.progress(72)
+
+    st.write("Course Progress: **72%**")
+
+    st.button("Continue Learning →")
+    # ==========================================================
+# TOOLS PAGE
+# ==========================================================
+
+elif page == "tools":
+
+    st.title("🧮 Financial Tools")
+
+    st.caption(
+        "Professional calculators for investors and analysts."
+    )
+
+    st.divider()
+
+    tool = st.selectbox(
+        "Choose a Calculator",
+        [
+            "DCF Calculator",
+            "CAGR Calculator",
+            "Compound Interest",
+            "SIP Calculator",
+            "Financial Ratios"
+        ]
+    )
+
     # =====================================================
-# BLOOMBERG STYLE STOCK TICKER
-# =====================================================
+    # DCF
+    # =====================================================
 
+    if tool == "DCF Calculator":
+
+        st.subheader("Discounted Cash Flow")
+
+        col1,col2,col3 = st.columns(3)
+
+        with col1:
+            cashflow = st.number_input(
+                "Annual Free Cash Flow ($M)",
+                value=500.0
+            )
+
+        with col2:
+            growth = st.slider(
+                "Growth Rate (%)",
+                0,
+                30,
+                10
+            )
+
+        with col3:
+            discount = st.slider(
+                "Discount Rate (%)",
+                1,
+                20,
+                10
+            )
+
+        years = 5
+
+        total = 0
+
+        for i in range(1, years+1):
+
+            future = cashflow*((1+growth/100)**i)
+
+            pv = future/((1+discount/100)**i)
+
+            total += pv
+
+        st.success(
+            f"Estimated DCF Valuation: ${total:,.2f} Million"
+        )
+
+    # =====================================================
+    # CAGR
+    # =====================================================
+
+    elif tool == "CAGR Calculator":
+
+        st.subheader("Compound Annual Growth Rate")
+
+        c1,c2,c3 = st.columns(3)
+
+        with c1:
+            begin = st.number_input(
+                "Beginning Value",
+                value=100
+            )
+
+        with c2:
+            end = st.number_input(
+                "Ending Value",
+                value=250
+            )
+
+        with c3:
+            yrs = st.number_input(
+                "Years",
+                value=5
+            )
+
+        cagr = ((end/begin)**(1/yrs)-1)*100
+
+        st.metric(
+            "CAGR",
+            f"{cagr:.2f}%"
+        )
+
+    # =====================================================
+    # COMPOUND INTEREST
+    # =====================================================
+
+    elif tool == "Compound Interest":
+
+        st.subheader("Compound Interest Calculator")
+
+        p = st.number_input(
+            "Principal",
+            value=10000
+        )
+
+        r = st.slider(
+            "Interest Rate (%)",
+            1,
+            20,
+            8
+        )
+
+        n = st.number_input(
+            "Years",
+            value=10
+        )
+
+        amount = p*((1+r/100)**n)
+
+        st.metric(
+            "Future Value",
+            f"${amount:,.2f}"
+        )
+
+    # =====================================================
+    # SIP
+    # =====================================================
+
+    elif tool == "SIP Calculator":
+
+        st.subheader("Systematic Investment Plan")
+
+        monthly = st.number_input(
+            "Monthly Investment",
+            value=500
+        )
+
+        rate = st.slider(
+            "Expected Return (%)",
+            1,
+            20,
+            12
+        )
+
+        yrs = st.number_input(
+            "Years",
+            value=15
+        )
+
+        months = yrs*12
+
+        monthly_rate = rate/1200
+
+        future = monthly*(((1+monthly_rate)**months-1)/monthly_rate)*(1+monthly_rate)
+
+        st.metric(
+            "Estimated Corpus",
+            f"${future:,.2f}"
+        )
+
+    # =====================================================
+    # RATIOS
+    # =====================================================
+
+    elif tool == "Financial Ratios":
+
+        st.subheader("Financial Ratio Calculator")
+
+        revenue = st.number_input(
+            "Revenue",
+            value=1000.0
+        )
+
+        profit = st.number_input(
+            "Net Profit",
+            value=150.0
+        )
+
+        assets = st.number_input(
+            "Total Assets",
+            value=3000.0
+        )
+
+        equity = st.number_input(
+            "Shareholder Equity",
+            value=1800.0
+        )
+
+        margin = (profit/revenue)*100
+
+        roa = (profit/assets)*100
+
+        roe = (profit/equity)*100
+
+        c1,c2,c3 = st.columns(3)
+
+        with c1:
+            st.metric(
+                "Profit Margin",
+                f"{margin:.2f}%"
+            )
+
+        with c2:
+            st.metric(
+                "ROA",
+                f"{roa:.2f}%"
+            )
+
+        with c3:
+            st.metric(
+                "ROE",
+                f"{roe:.2f}%"
+            )
+
+    st.divider()
+
+    st.subheader("📈 Financial Formula Reference")
+
+    formulas = {
+        "DCF":
+        "PV = CF / (1+r)^n",
+
+        "CAGR":
+        "((Ending/Beginning)^(1/n))-1",
+
+        "Compound Interest":
+        "A=P(1+r)^n",
+
+        "ROE":
+        "Net Profit / Equity",
+
+        "ROA":
+        "Net Profit / Assets"
+    }
+
+    st.table(pd.DataFrame(
+        formulas.items(),
+        columns=["Formula","Expression"]
+    ))
+    # ==========================================================
+# PART 8 - FINAL UI POLISH
+# Bloomberg-style Ticker + Footer
+# ==========================================================
+
+import datetime
+
+# ----------------------------------------------------------
+# Additional CSS
+# ----------------------------------------------------------
 st.markdown("""
-
 <style>
 
-/* Add bottom spacing so ticker doesn't overlap content */
-.block-container{
-    padding-bottom:70px !important;
+/* Bottom ticker */
+
+.bottom-ticker{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:42px;
+    background:#000000;
+    color:#F59E0B;
+    overflow:hidden;
+    white-space:nowrap;
+    z-index:99999;
+    border-top:2px solid #F59E0B;
+    font-size:15px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
 }
 
-/* Fixed Bottom Ticker */
-
-.stock-ticker{
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-width:100%;
-
-height:48px;
-
-background:#0f172a;
-
-border-top:1px solid #1e293b;
-
-display:flex;
-
-align-items:center;
-
-overflow:hidden;
-
-z-index:999999;
-
-box-shadow:0 -3px 10px rgba(0,0,0,.25);
-
-font-family:Inter,sans-serif;
-
+.bottom-ticker span{
+    display:inline-block;
+    padding-left:100%;
+    animation:ticker 40s linear infinite;
 }
 
-/* Track */
-
-.stock-track{
-
-display:flex;
-
-width:max-content;
-
-animation:scroll 45s linear infinite;
-
-}
-
-.stock-track:hover{
-
-animation-play-state:paused;
-
-}
-
-/* Animation */
-
-@keyframes scroll{
+@keyframes ticker{
 
 0%{
-
 transform:translateX(0);
-
 }
 
 100%{
-
-transform:translateX(-50%);
-
+transform:translateX(-100%);
 }
 
 }
 
-/* Items */
+/* Footer */
 
-.stock{
+.footer{
 
-display:flex;
+margin-top:80px;
+margin-bottom:55px;
+padding:25px;
 
-align-items:center;
+border-top:1px solid #D1D5DB;
 
-padding:0 28px;
+text-align:center;
+
+color:#6B7280;
 
 font-size:14px;
 
-white-space:nowrap;
-
 }
 
-.symbol{
+.footer h4{
 
-color:#94a3b8;
+margin-bottom:8px;
 
-font-weight:700;
-
-margin-right:8px;
-
-}
-
-.price{
-
-color:white;
-
-font-weight:600;
-
-margin-right:8px;
-
-}
-
-.green{
-
-color:#22c55e;
-
-font-weight:700;
-
-}
-
-.red{
-
-color:#ef4444;
-
-font-weight:700;
+color:#111827;
 
 }
 
 </style>
-
-<div class="stock-ticker">
-
-<div class="stock-track">
-
-<div class="stock">
-<span class="symbol">NIFTY 50</span>
-<span class="price">23,458.20</span>
-<span class="green">▲ +0.62%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">BANK NIFTY</span>
-<span class="price">50,120.50</span>
-<span class="green">▲ +0.64%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">RELIANCE</span>
-<span class="price">₹2,980.15</span>
-<span class="green">▲ +0.83%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">TCS</span>
-<span class="price">₹4,120.00</span>
-<span class="red">▼ -0.30%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">INFY</span>
-<span class="price">₹1,650.25</span>
-<span class="red">▼ -0.31%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">ICICI</span>
-<span class="price">₹1,115.40</span>
-<span class="green">▲ +1.29%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">SBIN</span>
-<span class="price">₹820.50</span>
-<span class="red">▼ -0.58%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">HDFC</span>
-<span class="price">₹1,540.80</span>
-<span class="green">▲ +0.55%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">ITC</span>
-<span class="price">₹435.60</span>
-<span class="green">▲ +0.48%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">LT</span>
-<span class="price">₹3,560.00</span>
-<span class="green">▲ +1.19%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">BHARTI</span>
-<span class="price">₹1,410.90</span>
-<span class="green">▲ +1.31%</span>
-</div>
-
-<!-- Duplicate for infinite animation -->
-
-<div class="stock">
-<span class="symbol">NIFTY 50</span>
-<span class="price">23,458.20</span>
-<span class="green">▲ +0.62%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">BANK NIFTY</span>
-<span class="price">50,120.50</span>
-<span class="green">▲ +0.64%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">RELIANCE</span>
-<span class="price">₹2,980.15</span>
-<span class="green">▲ +0.83%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">TCS</span>
-<span class="price">₹4,120.00</span>
-<span class="red">▼ -0.30%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">INFY</span>
-<span class="price">₹1,650.25</span>
-<span class="red">▼ -0.31%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">ICICI</span>
-<span class="price">₹1,115.40</span>
-<span class="green">▲ +1.29%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">SBIN</span>
-<span class="price">₹820.50</span>
-<span class="red">▼ -0.58%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">HDFC</span>
-<span class="price">₹1,540.80</span>
-<span class="green">▲ +0.55%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">ITC</span>
-<span class="price">₹435.60</span>
-<span class="green">▲ +0.48%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">LT</span>
-<span class="price">₹3,560.00</span>
-<span class="green">▲ +1.19%</span>
-</div>
-
-<div class="stock">
-<span class="symbol">BHARTI</span>
-<span class="price">₹1,410.90</span>
-<span class="green">▲ +1.31%</span>
-</div>
-
-</div>
-
-</div>
-
 """, unsafe_allow_html=True)
+
+# ----------------------------------------------------------
+# Loading animation
+# ----------------------------------------------------------
+
+with st.spinner("Loading X-Invo Dashboard..."):
+    time.sleep(0.4)
+
+# ----------------------------------------------------------
+# Live ticker
+# ----------------------------------------------------------
+
+ticker_html = """
+<div class="bottom-ticker">
+
+<span>
+
+📈 NIFTY 50 ▲ 23,458.20 (+0.62%)
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+📊 SENSEX ▲ 77,824.12 (+0.53%)
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+💻 NASDAQ ▲ 18,975.10 (+1.12%)
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+🏦 DOW JONES ▼ 42,180.40 (-0.19%)
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+🚀 NVIDIA ▲ 4.2%
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+🍎 APPLE ▲ 1.4%
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+🪟 MICROSOFT ▲ 2.1%
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+🏭 RELIANCE ▲ 0.8%
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+💰 GOLD $2,425/oz
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+₿ BITCOIN $108,450
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+💵 USD/INR 83.42
+
+</span>
+
+</div>
+"""
+
+st.markdown(
+    ticker_html,
+    unsafe_allow_html=True
+)
+
+# ----------------------------------------------------------
+# Footer
+# ----------------------------------------------------------
+
+year = datetime.datetime.now().year
+
+st.markdown(
+f"""
+<div class="footer">
+
+<h4>X-Invo</h4>
+
+<p>
+Professional IPO Valuation &
+Financial Intelligence Platform
+</p>
+
+<p>
+
+Home |
+IPO Predictor |
+Markets |
+News |
+Learn |
+Tools
+
+</p>
+
+<p>
+
+© {year} X-Invo.
+Built with Streamlit & Plotly.
+
+</p>
+
+</div>
+
+""",
+unsafe_allow_html=True
+)
+
+# ----------------------------------------------------------
+# Sidebar Status
+# ----------------------------------------------------------
+
+st.sidebar.divider()
+
+st.sidebar.success("🟢 System Online")
+
+st.sidebar.metric(
+    "Version",
+    "1.0"
+)
+
+st.sidebar.metric(
+    "Last Updated",
+    datetime.datetime.now().strftime("%d %b %Y")
+)
+
+st.sidebar.metric(
+    "Market Status",
+    "OPEN"
+)
+
+st.sidebar.caption(
+    "X-Invo Financial Intelligence Platform"
+)
