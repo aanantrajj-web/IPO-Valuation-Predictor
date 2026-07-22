@@ -2,12 +2,85 @@ import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
-# --- SETUP ---
+# --- SETUP & HIREZAPP-STYLE CSS ---
 st.set_page_config(page_title="IPO Predictor Pro", layout="centered")
-st.title("📈 Institutional IPO Valuation Engine")
-st.write("This engine bridges quantitative machine learning with real-world investment banking mechanics to predict a highly accurate IPO price.")
 
-st.divider()
+st.markdown("""
+    <style>
+    /* 1. Subtle Geometric Grid Background */
+    .stApp {
+        background-color: #ffffff;
+        background-image: linear-gradient(#f4f5f7 1px, transparent 1px), linear-gradient(90deg, #f4f5f7 1px, transparent 1px);
+        background-size: 40px 40px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* 2. Vibrant Blue Pill-Shaped Buttons */
+    div.stButton > button:first-child {
+        background-color: #3b82f6; /* Modern SaaS Blue */
+        color: white;
+        font-weight: 600;
+        border-radius: 30px; /* Pill shape */
+        border: none;
+        padding: 12px 30px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+        width: 100%;
+    }
+
+    /* Button Hover Effect */
+    div.stButton > button:first-child:hover {
+        background-color: #2563eb;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
+    }
+
+    /* 3. Clean White Info Cards */
+    div.stAlert {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        color: #334155;
+    }
+    
+    /* 4. Sleek Input Fields */
+    .stTextInput>div>div>input, .stNumberInput>div>div>input {
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background-color: #ffffff;
+    }
+
+    /* Hero Text Styling */
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+        margin-bottom: 0.2rem;
+    }
+    .hero-italic {
+        font-family: 'Georgia', serif;
+        font-style: italic;
+        color: #94a3b8;
+        font-weight: normal;
+    }
+    .hero-subtitle {
+        color: #3b82f6;
+        font-size: 0.9rem;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- CUSTOM HERO HEADER (Mimicking the Screenshot) ---
+st.markdown('<div class="hero-subtitle">AI VALUATION OPS • ONE WORKSPACE</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">Predict real-world IPOs<br>without getting lost in<br><span class="hero-italic">valuation chaos.</span></div>', unsafe_allow_html=True)
+st.write("") # Spacer
 
 # --- TRAINING DATA & MODEL (Hidden in background) ---
 data = {
@@ -27,9 +100,6 @@ model.fit(X, y)
 st.header("Phase 1: Intrinsic Financial Fundamentals")
 st.markdown("""
 **📝 Investment Thesis:** Before factoring in market hype, a company has an *intrinsic* baseline value driven by its core financials. 
-*   **Revenue:** Demonstrates market share and scale.
-*   **Profit Margins:** Shows operational efficiency and pricing power.
-*   **Cash Burn:** Highlights liquidity risk (high cash burn severely penalizes valuation).
 """)
 
 company_name = st.text_input("Company Name", "e.g., Reddit")
@@ -52,11 +122,7 @@ if st.button("Calculate Intrinsic Valuation"):
 st.divider() 
 
 # --- SECTION 2: SHARE DILUTION ---
-st.header("Phase 2: Share Dilution (Cutting the Equity Pie)")
-st.markdown("""
-**📝 Investment Thesis:** A $10 Billion company is priced differently depending on how many pieces it is sliced into. Dividing the Total Valuation by the Number of Shares dictates the mathematical base share price.
-""")
-
+st.header("Phase 2: Share Dilution")
 shares_offered = st.number_input("Total Shares Issued to Public (in millions)", value=150.0)
 
 if st.button("Calculate Base IPO Price (No Hype)"):
@@ -68,7 +134,6 @@ st.divider()
 # --- SECTION 3: REAL-WORLD MECHANICS (QUANTIFIED ROADSHOW) ---
 st.header("Phase 3: The Roadshow (Supply & Demand)")
 st.markdown("""
-**📝 Investment Thesis:** In real-world investment banking, an IPO price is heavily influenced by the "Roadshow"—the period where bankers pitch the stock to institutions. 
 *Enter the real-world market metrics below, and the **Roadshow Premium Bar** will automatically calculate and deflect based on your inputs.*
 """)
 
@@ -82,19 +147,17 @@ with col_b:
     st.caption("A strong stock market allows for higher pricing.")
 
 # The Math that drives the automatic bar
-oversubscription = max(shares_demanded / shares_offered, 0.1) # Calculate how many times oversubscribed
-oversub_mod = (oversubscription - 1.0) * 0.05 # Add 5% premium for every 1x oversubscribed
-
+oversubscription = max(shares_demanded / shares_offered, 0.1) 
+oversub_mod = (oversubscription - 1.0) * 0.05 
 climate_mod = 0.15 if sp500_return >= 10 else (-0.15 if sp500_return <= 0 else 0.0)
 
 # Calculate final automatic hype
 calculated_hype = 1.0 + oversub_mod + climate_mod
-calculated_hype = max(min(calculated_hype, 2.5), 0.5) # Keep between 0.5x and 2.5x
+calculated_hype = max(min(calculated_hype, 2.5), 0.5) 
 
 # --- THE AUTOMATIC BAR ---
 st.write("### 📊 Automated Market Sentiment Bar")
 st.slider("Calculated Hype Premium (1.0 = Neutral)", 0.5, 2.5, float(calculated_hype), disabled=True)
-st.caption("🔒 *This bar is locked. It automatically deflects in real-time based on the Roadshow metrics you entered above.*")
 
 if st.button("Calculate Final IPO Price (With Market Hype)"):
     final_valuation = base_valuation * calculated_hype
