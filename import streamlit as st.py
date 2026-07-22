@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+import textwrap
 
 # --- SETUP ---
 st.set_page_config(page_title="IPO Predictor Pro", layout="wide", initial_sidebar_state="collapsed")
@@ -82,7 +83,6 @@ st.markdown(f"""
 # PAGE ROUTING: HOME (CALCULATOR)
 # ==========================================
 if current_page == "home":
-    # --- MACHINE LEARNING DATA SETUP ---
     data = {
         'Revenue': [3000, 25000, 250, 20000, 500, 804],
         'Profit Margins': [12, 15, -40, 8, -20, -11],
@@ -155,115 +155,116 @@ if current_page == "home":
 # PAGE ROUTING: LEARN (CUSTOM ARTICLE UI)
 # ==========================================
 elif current_page == "learn":
-    # HTML must NOT be indented here, otherwise Streamlit renders it as a code block
-    st.markdown("""
-<style>
-.article-container {
-    max-width: 900px;
-    margin: 0 auto;
-    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    color: #1a202c;
-    padding-bottom: 100px;
-}
-.breadcrumb {
-    color: #007b8a;
-    font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.article-hr {
-    border: 0;
-    border-top: 1px solid #e2e8f0;
-    margin-bottom: 30px;
-}
-.article-title {
-    color: #5a6b7c;
-    font-size: 38px;
-    font-weight: 600;
-    margin-bottom: 24px;
-    line-height: 1.2;
-}
-.article-intro {
-    font-size: 16px;
-    line-height: 1.6;
-    margin-bottom: 24px;
-    color: #2d3748;
-}
-.toc-list {
-    margin: 0 0 35px 0;
-    padding-left: 20px;
-}
-.toc-list li {
-    margin-bottom: 6px;
-    font-size: 16px;
-}
-.teal-link {
-    color: #007b8a;
-    text-decoration: none;
-    font-weight: 400;
-}
-.teal-link:hover {
-    text-decoration: underline;
-}
-.section-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: 35px;
-    margin-bottom: 15px;
-    color: #0f172a;
-}
-.article-text {
-    font-size: 16px;
-    line-height: 1.7;
-    margin-bottom: 20px;
-    color: #1a202c;
-}
-</style>
+    # textwrap.dedent strips out Python indentation automatically so Streamlit parses it as HTML
+    learn_html = textwrap.dedent("""
+    <style>
+    .article-container {
+        max-width: 900px;
+        margin: 0 auto;
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        color: #1a202c;
+        padding-bottom: 100px;
+    }
+    .breadcrumb {
+        color: #007b8a;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .article-hr {
+        border: 0;
+        border-top: 1px solid #e2e8f0;
+        margin-bottom: 30px;
+    }
+    .article-title {
+        color: #5a6b7c;
+        font-size: 38px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        line-height: 1.2;
+    }
+    .article-intro {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        color: #2d3748;
+    }
+    .toc-list {
+        margin: 0 0 35px 0;
+        padding-left: 20px;
+    }
+    .toc-list li {
+        margin-bottom: 6px;
+        font-size: 16px;
+    }
+    .teal-link {
+        color: #007b8a;
+        text-decoration: none;
+        font-weight: 400;
+    }
+    .teal-link:hover {
+        text-decoration: underline;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 35px;
+        margin-bottom: 15px;
+        color: #0f172a;
+    }
+    .article-text {
+        font-size: 16px;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        color: #1a202c;
+    }
+    </style>
 
-<div class="article-container">
-    <div class="breadcrumb">HOME</div>
-    <hr class="article-hr">
-    
-    <div class="article-title">Introduction to Investing</div>
-    
-    <div class="article-intro">
-        Through investing, you can build wealth for a strong financial future. Defining your goals and creating and sticking to a plan by regularly setting money aside for investments can drive life-changing results over time.
-    </div>
-    
-    <ul class="toc-list">
-        <li><a href="#" class="teal-link">What is Investing?</a></li>
-        <li><a href="#" class="teal-link">Compound Growth</a></li>
-        <li><a href="#" class="teal-link">Managing Risk</a></li>
-        <li><a href="#" class="teal-link">Asset Allocation and Diversification</a></li>
-        <li><a href="#" class="teal-link">Long-Term Investments</a></li>
-        <li><a href="#" class="teal-link">Savings and Short-Term Investments</a></li>
-        <li><a href="#" class="teal-link">Investing for Your Children</a></li>
-        <li><a href="#" class="teal-link">Other Steps to Build Wealth Over Time</a></li>
-    </ul>
-    
-    <div class="section-title">What is Investing?</div>
-    <div class="article-text">
-        Both saving and investing mean you're setting aside some of the money you earn, separate from what you spend on needs and wants. A savings account is a good choice for short-term goals or to hold an emergency fund that can cover unexpected expenses. You can open a savings account at a <a href="#" class="teal-link">bank</a> or <a href="#" class="teal-link">credit union</a>, and the money you deposit there is typically federally insured. Most banks or credit unions will pay some interest on your savings.
-    </div>
-    <div class="article-text">
-        Investing is when you put your money into assets such as <a href="#" class="teal-link">stocks</a> or <a href="#" class="teal-link">bonds</a>, often held in a brokerage or advisory account, with the expectation of making a return over time. Return from an asset may come from an increase in the asset's value or from an asset's interest or <a href="#" class="teal-link">dividend</a> payments to those who own it.
-    </div>
+    <div class="article-container">
+        <div class="breadcrumb">HOME</div>
+        <hr class="article-hr">
+        
+        <div class="article-title">Introduction to Investing</div>
+        
+        <div class="article-intro">
+            Through investing, you can build wealth for a strong financial future. Defining your goals and creating and sticking to a plan by regularly setting money aside for investments can drive life-changing results over time.
+        </div>
+        
+        <ul class="toc-list">
+            <li><a href="#" class="teal-link">What is Investing?</a></li>
+            <li><a href="#" class="teal-link">Compound Growth</a></li>
+            <li><a href="#" class="teal-link">Managing Risk</a></li>
+            <li><a href="#" class="teal-link">Asset Allocation and Diversification</a></li>
+            <li><a href="#" class="teal-link">Long-Term Investments</a></li>
+            <li><a href="#" class="teal-link">Savings and Short-Term Investments</a></li>
+            <li><a href="#" class="teal-link">Investing for Your Children</a></li>
+            <li><a href="#" class="teal-link">Other Steps to Build Wealth Over Time</a></li>
+        </ul>
+        
+        <div class="section-title">What is Investing?</div>
+        <div class="article-text">
+            Both saving and investing mean you're setting aside some of the money you earn, separate from what you spend on needs and wants. A savings account is a good choice for short-term goals or to hold an emergency fund that can cover unexpected expenses. You can open a savings account at a <a href="#" class="teal-link">bank</a> or <a href="#" class="teal-link">credit union</a>, and the money you deposit there is typically federally insured. Most banks or credit unions will pay some interest on your savings.
+        </div>
+        <div class="article-text">
+            Investing is when you put your money into assets such as <a href="#" class="teal-link">stocks</a> or <a href="#" class="teal-link">bonds</a>, often held in a brokerage or advisory account, with the expectation of making a return over time. Return from an asset may come from an increase in the asset's value or from an asset's interest or <a href="#" class="teal-link">dividend</a> payments to those who own it.
+        </div>
 
-    <div class="section-title">Compound Growth</div>
-    <div class="article-text">
-        Compound growth, or compounding, is the mathematical process by which an asset's earnings are reinvested to generate their own earnings over time. This concept applies equally to traditional savings accounts and broader investment portfolios. When you utilize <a href="#" class="teal-link">compound interest</a>, you are essentially making your money work for you, creating a snowball effect that accelerates the growth of your wealth.
-    </div>
+        <div class="section-title">Compound Growth</div>
+        <div class="article-text">
+            Compound growth, or compounding, is the mathematical process by which an asset's earnings are reinvested to generate their own earnings over time. This concept applies equally to traditional savings accounts and broader investment portfolios. When you utilize <a href="#" class="teal-link">compound interest</a>, you are essentially making your money work for you, creating a snowball effect that accelerates the growth of your wealth.
+        </div>
 
-    <div class="section-title">Managing Risk</div>
-    <div class="article-text">
-        All investments carry some degree of risk. Unlike a standard bank account, money invested in the stock market is not guaranteed to grow, and you could lose the principal amount you started with. Understanding your personal risk tolerance is essential. Investors often utilize a <a href="#" class="teal-link">prospectus</a> to evaluate the inherent risks of a specific mutual fund or ETF before committing capital.
-    </div>
+        <div class="section-title">Managing Risk</div>
+        <div class="article-text">
+            All investments carry some degree of risk. Unlike a standard bank account, money invested in the stock market is not guaranteed to grow, and you could lose the principal amount you started with. Understanding your personal risk tolerance is essential. Investors often utilize a <a href="#" class="teal-link">prospectus</a> to evaluate the inherent risks of a specific mutual fund or ETF before committing capital.
+        </div>
 
-    <div class="section-title">Asset Allocation and Diversification</div>
-    <div class="article-text">
-        Asset allocation involves dividing an investment portfolio among different asset categories, such as equities, fixed income, and cash equivalents. The strategic goal of diversification is to mitigate systematic risk. By spreading your investments across various sectors—such as technology, healthcare, and energy—you reduce the impact of a single market downturn on your overall portfolio. This strategy is frequently managed through <a href="#" class="teal-link">index funds</a> or <a href="#" class="teal-link">mutual funds</a>.
+        <div class="section-title">Asset Allocation and Diversification</div>
+        <div class="article-text">
+            Asset allocation involves dividing an investment portfolio among different asset categories, such as equities, fixed income, and cash equivalents. The strategic goal of diversification is to mitigate systematic risk. By spreading your investments across various sectors—such as technology, healthcare, and energy—you reduce the impact of a single market downturn on your overall portfolio. This strategy is frequently managed through <a href="#" class="teal-link">index funds</a> or <a href="#" class="teal-link">mutual funds</a>.
+        </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """)
+    st.markdown(learn_html, unsafe_allow_html=True)
