@@ -7,7 +7,23 @@ st.set_page_config(page_title="IPO Predictor Pro", layout="centered")
 
 st.markdown("""
     <style>
-    /* Background and Fonts */
+    /* 1. Hide Streamlit's Default Header to make it look like a real website */
+    header {visibility: hidden;}
+    
+    /* 2. The Custom Top-Left Logo */
+    .brand-logo {
+        position: fixed;
+        top: 20px;
+        left: 40px;
+        font-size: 38px;
+        font-weight: 900;
+        color: #0f172a;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        z-index: 999999;
+        letter-spacing: -2px; /* Gives it that tight, minimalist look */
+    }
+
+    /* 3. Background and Fonts */
     .stApp {
         background-color: #ffffff;
         background-image: linear-gradient(#f4f5f7 1px, transparent 1px), linear-gradient(90deg, #f4f5f7 1px, transparent 1px);
@@ -95,6 +111,9 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+# --- INJECT THE LOGO ---
+st.markdown('<div class="brand-logo">A.</div>', unsafe_allow_html=True)
 
 # --- CUSTOM HERO HEADER ---
 st.markdown('<div class="hero-subtitle">AI VALUATION OPS • ONE WORKSPACE</div>', unsafe_allow_html=True)
