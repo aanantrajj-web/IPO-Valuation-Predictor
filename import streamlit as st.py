@@ -14,13 +14,23 @@ st.markdown("""
         background-size: 40px 40px;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+    
+    /* FIX: Force all standard text, markdown, and input labels to be dark slate gray */
+    label, p, .stMarkdown, div[data-testid="stMarkdownContainer"] {
+        color: #334155 !important; 
+    }
+    
+    /* FIX: Force Streamlit headers to be dark */
+    h1, h2, h3 {
+        color: #0f172a !important;
+    }
 
     /* 2. Vibrant Blue Pill-Shaped Buttons */
     div.stButton > button:first-child {
-        background-color: #3b82f6; /* Modern SaaS Blue */
-        color: white;
+        background-color: #3b82f6; 
+        color: white !important;
         font-weight: 600;
-        border-radius: 30px; /* Pill shape */
+        border-radius: 30px; 
         border: none;
         padding: 12px 30px;
         transition: all 0.2s ease;
@@ -31,7 +41,7 @@ st.markdown("""
     /* Button Hover Effect */
     div.stButton > button:first-child:hover {
         background-color: #2563eb;
-        color: white;
+        color: white !important;
         transform: translateY(-2px);
         box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
     }
@@ -42,7 +52,7 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-        color: #334155;
+        color: #334155 !important;
     }
     
     /* 4. Sleek Input Fields */
@@ -50,24 +60,25 @@ st.markdown("""
         border-radius: 8px;
         border: 1px solid #cbd5e1;
         background-color: #ffffff;
+        color: #0f172a !important;
     }
 
     /* Hero Text Styling */
     .hero-title {
         font-size: 2.8rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #0f172a !important;
         line-height: 1.2;
         margin-bottom: 0.2rem;
     }
     .hero-italic {
         font-family: 'Georgia', serif;
         font-style: italic;
-        color: #94a3b8;
+        color: #94a3b8 !important;
         font-weight: normal;
     }
     .hero-subtitle {
-        color: #3b82f6;
+        color: #3b82f6 !important;
         font-size: 0.9rem;
         letter-spacing: 1.5px;
         font-weight: 600;
@@ -77,7 +88,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- CUSTOM HERO HEADER (Mimicking the Screenshot) ---
+# --- CUSTOM HERO HEADER ---
 st.markdown('<div class="hero-subtitle">AI VALUATION OPS • ONE WORKSPACE</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-title">Predict real-world IPOs<br>without getting lost in<br><span class="hero-italic">valuation chaos.</span></div>', unsafe_allow_html=True)
 st.write("") # Spacer
